@@ -11,42 +11,42 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class UserRestController {
-    private final Services USER_SERVICE;
+    private Services userService;
 
     @Autowired
     public UserRestController(@Qualifier("userServiceImplementation") Services userService) {
-        USER_SERVICE = userService;
+        this.userService = userService;
     }
 
     @GetMapping("/users")
     public List<Object> getUsers(){
-        return USER_SERVICE.findAll();
+        return userService.findAll();
     }
 
     @GetMapping("/users/{userId}")
     public Object getUserById(@PathVariable int userId){
-        return USER_SERVICE.findById(userId);
+        return userService.findById(userId);
     }
 
     @PostMapping("/users")
     public String addUser(@RequestBody User user){
         user.setId(0);
-        USER_SERVICE.saveObject(user);
+        userService.saveObject(user);
         return user.toString() + "has been added";
     }
 
     @PutMapping("/users")
     public void updateUser(@PathVariable User user){
-        USER_SERVICE.saveObject(user);
+        userService.saveObject(user);
     }
 
     @DeleteMapping("/users/{userId}")
     public String deleteUser(int id){
-        User tempUser = (User)USER_SERVICE.findById(id);
+        User tempUser = (User)userService.findById(id);
         if(tempUser==null){
             throw new RuntimeException("Employee noy found : " + id);
         }
-        USER_SERVICE.deleteById(id);
+        userService.deleteById(id);
         return tempUser.toString() + "has been deleted";
     }
 }

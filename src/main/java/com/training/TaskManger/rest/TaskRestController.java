@@ -8,49 +8,53 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class TaskRestController {
-
-    private final Services TASK_SERVICE;
+    private Services taskService;
 
     @Autowired
     public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
-        TASK_SERVICE = taskService;
+        this.taskService = taskService;
     }
 
     @GetMapping("/tasks")
     public List<Object> getTasks(){
-        return TASK_SERVICE.findAll();
+        return taskService.findAll();
     }
 
     @GetMapping("/tasks/{taskId}")
-    public Object getUserTaskById(@PathVariable int taskId){
-        return TASK_SERVICE.findById(taskId);
+    public Object getTaskById(@PathVariable int taskId){
+        Task task = (Task) taskService.findById(taskId);
+
+        if(task == null){
+            throw new RuntimeException("Employee not found : " + taskId);
+        }
+        return task;
     }
 
     @PostMapping("/tasks")
     public String addTask(@RequestBody Task task){
         task.setUserId(0);
-        TASK_SERVICE.saveObject((TaskRepository)task);
+        taskService.saveObject(task);
         return task.toString() + "has been added";
     }
 
     @PutMapping("/tasks")
     public void updateTask(@PathVariable Task task){
-        TASK_SERVICE.saveObject((TaskRepository) task);
+        taskService.saveObject((TaskRepository) task);
     }
 
-    @DeleteMapping("/tasks/{userId}")
-    public String deleteTask(int id){
-        Task tempTask = (Task) TASK_SERVICE.findById(id);
+    @DeleteMapping("/tasks/{taskId}")
+    public String deleteTask(int taskId){
+        Task tempTask = (Task) taskService.findById(taskId);
         if(tempTask==null){
-            throw new RuntimeException("Task noy found : " + id);
+            throw new RuntimeException("Task noy found : " + taskId);
         }
-        TASK_SERVICE.deleteById(id);
+        taskService.deleteById(taskId);
         return tempTask.toString() + "has been deleted";
     }
+
 
 }
