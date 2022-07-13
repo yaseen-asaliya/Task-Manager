@@ -40,4 +40,13 @@ public class Task {
     public void setCompleted(int completed) {
         this.completed = completed;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "userId=" + userId +
+                ", description='" + description + '\'' +
+                ", completed=" + completed +
+                '}';
+    }
 }
