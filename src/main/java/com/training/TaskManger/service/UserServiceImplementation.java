@@ -3,10 +3,7 @@ package com.training.TaskManger.service;
 import com.training.TaskManger.Entity.User;
 import com.training.TaskManger.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

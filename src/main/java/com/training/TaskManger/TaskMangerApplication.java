@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication(scanBasePackages = {"com.training.TaskManger"})
+@SpringBootApplication
 public class TaskMangerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TaskMangerApplication.class, args);

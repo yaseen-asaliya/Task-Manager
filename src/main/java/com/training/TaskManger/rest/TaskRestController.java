@@ -1,14 +1,9 @@
 package com.training.TaskManger.rest;
 
 import com.training.TaskManger.Entity.Task;
-import com.training.TaskManger.dao.TaskRepository;
 import com.training.TaskManger.service.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

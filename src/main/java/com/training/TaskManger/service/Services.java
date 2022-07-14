@@ -1,7 +1,5 @@
 package com.training.TaskManger.service;
 
-import com.training.TaskManger.Entity.Task;
-
 import java.util.List;
 
 public interface Services<T> {
