@@ -5,6 +5,9 @@ import com.training.TaskManger.dao.TaskRepository;
 import com.training.TaskManger.service.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +18,7 @@ public class TaskRestController {
     private Services taskService;
 
     @Autowired
-    public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
+    public TaskRestController(@Qualifier("TaskService") Services taskService) {
         this.taskService = taskService;
     }
 
