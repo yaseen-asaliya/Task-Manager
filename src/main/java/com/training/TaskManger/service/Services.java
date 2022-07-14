@@ -1,13 +1,15 @@
 package com.training.TaskManger.service;
 
+import com.training.TaskManger.Entity.Task;
+
 import java.util.List;
 
-public interface Services {
-    public List<Object> findAll();
+public interface Services<T> {
+    public List<T> findAll();
 
-    public Object findById(int id);
+    public T findById(int id);
 
-    public void saveObject(Object item);
+    public void saveObject(T item);
 
     public void deleteById(int id);
 }

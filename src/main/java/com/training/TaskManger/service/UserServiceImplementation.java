@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Component("UserService")
-public class UserServiceImplementation implements Services {
+public class UserServiceImplementation implements Services<User> {
 
     private UserRepository userRepository;
 
@@ -22,13 +21,12 @@ public class UserServiceImplementation implements Services {
     }
 
     @Override
-    public List<Object> findAll() {
-        List<User> result = userRepository.findAll();
-        return Collections.singletonList(result);
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override
-    public Object findById(int id) {
+    public User findById(int id) {
         Optional<User> result = userRepository.findById(id);
 
         User user = null;
@@ -42,8 +40,8 @@ public class UserServiceImplementation implements Services {
     }
 
     @Override
-    public void saveObject(Object item) {
-        userRepository.save((User) item);
+    public void saveObject(User item) {
+        userRepository.save(item);
     }
 
     @Override

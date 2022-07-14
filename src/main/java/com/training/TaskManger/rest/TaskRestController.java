@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +18,11 @@ import java.util.List;
 public class TaskRestController {
     private Services taskService;
 
+    public TaskRestController(){
+
+    }
     @Autowired
-    public TaskRestController(@Qualifier("TaskService") Services taskService) {
+    public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
         this.taskService = taskService;
     }
 
@@ -46,7 +50,7 @@ public class TaskRestController {
 
     @PutMapping("/tasks")
     public void updateTask(@PathVariable Task task){
-        taskService.saveObject((TaskRepository) task);
+        taskService.saveObject(task);
     }
 
     @DeleteMapping("/tasks/{taskId}")

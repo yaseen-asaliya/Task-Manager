@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +16,11 @@ import java.util.List;
 public class UserRestController {
     private Services userService;
 
+    public UserRestController(){
+
+    }
     @Autowired
-    public UserRestController(@Qualifier("UserService") Services userService) {
+    public UserRestController(@Qualifier("userServiceImplementation") Services userService) {
         this.userService = userService;
     }
 
@@ -46,7 +50,7 @@ public class UserRestController {
     public String deleteUser(int id){
         User tempUser = (User)userService.findById(id);
         if(tempUser==null){
-            throw new RuntimeException("Employee noy found : " + id);
+            throw new RuntimeException("User noy found : " + id);
         }
         userService.deleteById(id);
         return tempUser.toString() + "has been deleted";

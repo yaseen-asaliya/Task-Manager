@@ -1,21 +1,15 @@
 package com.training.TaskManger.service;
 
 import com.training.TaskManger.Entity.Task;
-import com.training.TaskManger.Entity.User;
 import com.training.TaskManger.dao.TaskRepository;
-import com.training.TaskManger.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Component("TaskService")
-public class TaskServiceImplementation implements Services {
+public class TaskServiceImplementation implements Services<Task> {
 
     private TaskRepository taskRepository;
 
@@ -25,13 +19,13 @@ public class TaskServiceImplementation implements Services {
     }
 
     @Override
-    public List<Object> findAll() {
-        List<Task> result = taskRepository.findAll();
-        return Collections.singletonList(result);
+    public List<Task> findAll() {
+        return taskRepository.findAll();
+
     }
 
     @Override
-    public Object findById(int id) {
+    public Task findById(int id) {
         Optional<Task> result = taskRepository.findById(id);
 
         Task task = null;
@@ -44,9 +38,10 @@ public class TaskServiceImplementation implements Services {
         return task;
     }
 
+
     @Override
-    public void saveObject(Object item) {
-        taskRepository.save((Task)item);
+    public void saveObject(Task item) {
+        taskRepository.save(item);
     }
 
     @Override
