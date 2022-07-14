@@ -18,6 +18,9 @@ public class TaskRestController {
     }
     @Autowired
     public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
+        if(taskService == null){
+            throw new NullPointerException();
+        }
         this.taskService = taskService;
     }
 
@@ -28,11 +31,12 @@ public class TaskRestController {
 
     @GetMapping("/tasks/{taskId}")
     public Object getTaskById(@PathVariable int taskId){
-        Task task = (Task) taskService.findById(taskId);
 
+        Task task = (Task) taskService.findById(taskId);
         if(task == null){
             throw new RuntimeException("Employee not found : " + taskId);
         }
+
         return task;
     }
 

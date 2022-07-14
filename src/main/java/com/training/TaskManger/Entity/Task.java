@@ -5,24 +5,33 @@ import javax.persistence.*;
 @Entity
 @Table(name = "task")
 public class Task {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id")
-    private int userId;
-    @Column(name = "description")
+    private int id;
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name="user_id")
+    private User user;
     private String description;
-    @Column(name="completed")
     private int completed;
 
-    public Task() {
+    public Task(User user, String description, int completed) {
+        this.user = user;
+        this.description = description;
+        this.completed = completed;
     }
 
-    public int getUserId() {
-        return userId;
+    public Task() {
+
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public void setUserId(int userId) {
-        this.userId = userId;
+        this.user = user;
     }
 
     public String getDescription() {
@@ -44,7 +53,7 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "userId=" + userId +
+                "userId=" + getUser() +
                 ", description='" + description + '\'' +
                 ", completed=" + completed +
                 '}';
