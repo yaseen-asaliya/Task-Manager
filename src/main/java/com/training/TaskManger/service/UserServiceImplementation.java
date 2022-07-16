@@ -2,6 +2,10 @@ package com.training.TaskManger.service;
 
 import com.training.TaskManger.Entity.User;
 import com.training.TaskManger.dao.UserRepository;
+import com.training.TaskManger.rest.NotFoundException;
+import com.training.TaskManger.rest.TaskRestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -10,6 +14,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImplementation implements Services<User> {
 
+    public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private UserRepository userRepository;
 
     @Autowired
@@ -19,30 +24,36 @@ public class UserServiceImplementation implements Services<User> {
 
     @Override
     public List<User> findAll() {
+        if(userRepository.findAll().isEmpty()){
+            throw new IllegalArgumentException("No users available.");
+        }
+        LOGGER.debug("The data was token from database.");
         return userRepository.findAll();
     }
 
     @Override
-    public User findById(int id) {
-        Optional<User> result = userRepository.findById(id);
+    public User findById(int userId) {
+        Optional<User> result = userRepository.findById(userId);
 
         User user = null;
         if(result.isPresent()){
-            user = (User) result.get();
+            user = result.get();
         }
         else{
-            throw new RuntimeException("Did not find an user - id : " + id);
+            LOGGER.warn("Wrong id passed.");
+            throw new NotFoundException("User with id -" + userId + "- not found.");
         }
+        LOGGER.debug("The User was token from database.");
         return user;
     }
 
     @Override
-    public void saveObject(User item) {
-        userRepository.save(item);
+    public void saveObject(User user) {
+        userRepository.save(user);
     }
 
     @Override
-    public void deleteById(int id) {
-        userRepository.deleteById(id);
+    public void deleteById(int userId) {
+        userRepository.deleteById(userId);
     }
 }

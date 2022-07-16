@@ -1,6 +1,5 @@
 package com.training.TaskManger.rest;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.training.TaskManger.Entity.Task;
 import com.training.TaskManger.service.Services;
 import org.slf4j.Logger;
@@ -8,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -22,9 +20,6 @@ public class TaskRestController {
     }
     @Autowired
     public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
-        if(taskService == null){
-            throw new NullPointerException();
-        }
         this.taskService = taskService;
         LOGGER.info("Task Controller created successfully");
     }
@@ -36,36 +31,39 @@ public class TaskRestController {
 
     @GetMapping("/tasks/{taskId}")
     public Object getTaskById(@PathVariable int taskId){
-
-        Task task = (Task) taskService.findById(taskId);
-        if(task == null){
-            throw new RuntimeException("Employee not found : " + taskId);
-        }
-
-        return task;
+        return taskService.findById(taskId);
     }
 
     @PostMapping("/tasks")
     public String addTask(@RequestBody Task task){
+        if(task == null){
+            throw new NullPointerException("Task is null");
+        }
         task.setUserId(0);
         taskService.saveObject(task);
-        return task.toString() + "has been added";
+        LOGGER.debug("Task posted completed.");
+        return task.toString() + " added successfully.";
     }
 
     @PutMapping("/tasks")
-    public void updateTask(@PathVariable Task task){
+    public String updateTask(@RequestBody Task task){
+        if(task == null){
+            throw new NullPointerException("Task is null");
+        }
         taskService.saveObject(task);
+        LOGGER.debug("Task updated completed.");
+        return task.toString() + " updated successfully.";
     }
 
     @DeleteMapping("/tasks/{taskId}")
-    public String deleteTask(int taskId){
+    public String deleteTask(@PathVariable int taskId){
         Task tempTask = (Task) taskService.findById(taskId);
-        if(tempTask==null){
-            throw new RuntimeException("Task noy found : " + taskId);
+        if(tempTask == null){
+            LOGGER.warn("Wrong user id passed");
+            throw new NotFoundException("Task with id -" + taskId + "- not found.");
         }
         taskService.deleteById(taskId);
-        return tempTask.toString() + "has been deleted";
+        LOGGER.debug("Task deleted completed.");
+        return tempTask.toString() + " deleted successfully.";
     }
-
-
 }
