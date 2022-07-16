@@ -1,5 +1,6 @@
 package com.training.TaskManger.rest;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.training.TaskManger.Entity.Task;
 import com.training.TaskManger.service.Services;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class TaskRestController {
-
+    public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private Services taskService;
 
     public TaskRestController(){
@@ -25,6 +26,7 @@ public class TaskRestController {
             throw new NullPointerException();
         }
         this.taskService = taskService;
+        LOGGER.info("Task Controller created successfully");
     }
 
     @GetMapping("/tasks")

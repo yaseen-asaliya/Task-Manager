@@ -1,6 +1,7 @@
 package com.training.TaskManger.rest;
 
 public class ErrorResponseException {
+
     private int status;
     private String message;
     private long timeStamp;

@@ -1,7 +1,6 @@
 package com.training.TaskManger.Entity;
 
 import javax.persistence.*;
-
 @Entity
 @Table(name="user")
 public class User {

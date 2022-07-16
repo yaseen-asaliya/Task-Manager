@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class RestExceptionHandler<E> {
 
-
     @ExceptionHandler
     public ResponseEntity<ErrorResponseException> handlerException(NotFoundException exp){
 

@@ -1,5 +1,6 @@
 package com.training.TaskManger.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.training.TaskManger.Entity.Task;
 import com.training.TaskManger.dao.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
