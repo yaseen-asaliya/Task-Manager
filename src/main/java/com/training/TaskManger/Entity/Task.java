@@ -1,6 +1,7 @@
 package com.training.TaskManger.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
@@ -10,25 +11,18 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int id = 0;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name="user_id")
+    @ManyToOne(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH,CascadeType.MERGE,
+                    CascadeType.REFRESH,CascadeType.PERSIST})
+    @JoinColumn(name = "user_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private User user;
     private String description;
     private int completed;
 
-    public Task(User user, String description, int completed) {
-        this.user = user;
-        this.description = description;
-        this.completed = completed;
-
-    }
-
-    public Task() {
-
-    }
 
     public int getId() {
         return id;
@@ -42,7 +36,7 @@ public class Task {
         return user;
     }
 
-    public void setUserId(int userId) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -61,6 +55,7 @@ public class Task {
     public void setCompleted(int completed) {
         this.completed = completed;
     }
+
 
     @Override
     public String toString() {
