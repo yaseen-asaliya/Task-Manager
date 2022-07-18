@@ -56,6 +56,11 @@ public class TaskRestController {
 
     @PutMapping("/tasks")
     public String updateTask(@RequestBody Task task){
+        Optional<User> optionalUser = userRepository.findById(task.getUser().getId());
+        if (!optionalUser.isPresent()) {
+            throw new NotFoundException("User with id -" + task.getUser().getId() +  "- not found.");
+        }
+        task.setUser(optionalUser.get());
         taskService.saveObject(task);
         LOGGER.debug("Task updated completed.");
         return task.toString() + " updated successfully.";
