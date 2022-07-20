@@ -1,4 +1,4 @@
-package com.training.TaskManger.rest;
+package com.training.TaskManger.exception;
 
 public class NotFoundException extends RuntimeException{
     public NotFoundException(String message) {

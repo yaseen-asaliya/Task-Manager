@@ -1,4 +1,4 @@
-package com.training.TaskManger.Entity;
+package com.training.TaskManger.entity;
 
 import javax.persistence.*;
 import java.util.ArrayList;

@@ -1,8 +1,9 @@
 package com.training.TaskManger.rest;
 
-import com.training.TaskManger.Entity.Task;
-import com.training.TaskManger.Entity.User;
+import com.training.TaskManger.entity.Task;
+import com.training.TaskManger.entity.User;
 import com.training.TaskManger.dao.UserRepository;
+import com.training.TaskManger.exception.NotFoundException;
 import com.training.TaskManger.service.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
