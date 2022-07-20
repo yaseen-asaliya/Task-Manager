@@ -1,4 +1,4 @@
-package com.training.TaskManger.Entity;
+package com.training.TaskManger.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

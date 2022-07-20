@@ -1,4 +1,4 @@
-package com.training.TaskManger.rest;
+package com.training.TaskManger.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
