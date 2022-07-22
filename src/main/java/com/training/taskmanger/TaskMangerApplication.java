@@ -1,4 +1,4 @@
-package com.training.TaskManger;
+package com.training.taskmanger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

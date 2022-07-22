@@ -1,8 +1,8 @@
-package com.training.TaskManger.rest;
+package com.training.taskmanger.controllers;
 
-import com.training.TaskManger.entity.User;
-import com.training.TaskManger.exception.NotFoundException;
-import com.training.TaskManger.service.Services;
+import com.training.taskmanger.entity.User;
+import com.training.taskmanger.exception.NotFoundException;
+import com.training.taskmanger.service.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

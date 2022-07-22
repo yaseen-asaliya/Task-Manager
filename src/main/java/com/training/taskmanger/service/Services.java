@@ -1,4 +1,4 @@
-package com.training.TaskManger.service;
+package com.training.taskmanger.service;
 
 import java.util.List;
 

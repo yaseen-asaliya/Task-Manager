@@ -1,9 +1,9 @@
-package com.training.TaskManger.service;
+package com.training.taskmanger.service;
 
-import com.training.TaskManger.entity.User;
-import com.training.TaskManger.dao.UserRepository;
-import com.training.TaskManger.exception.NotFoundException;
-import com.training.TaskManger.rest.TaskRestController;
+import com.training.taskmanger.entity.User;
+import com.training.taskmanger.repository.UserRepository;
+import com.training.taskmanger.exception.NotFoundException;
+import com.training.taskmanger.controllers.TaskRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
