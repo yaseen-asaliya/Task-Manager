@@ -18,18 +18,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImplementation implements Services<User>, UserDetailsService {
+public class UserServiceImplementation implements Services<User> {
 
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder bcryptEncoder;
 
-    @Autowired
+
     public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
 
     @Override
     public List<User> findAll() {
@@ -66,21 +65,6 @@ public class UserServiceImplementation implements Services<User>, UserDetailsSer
         userRepository.deleteById(userId);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                new ArrayList<>());
-    }
 
-    public User save(User user) {
-        User newUser = new User();
-        newUser.setUsername(user.getUsername());
-        newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-        return userRepository.save(newUser);
-    }
 
 }

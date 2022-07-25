@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,18 +15,24 @@ public class User {
     private String email;
     private String username;
 
-
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     public User() {
     }
 
-    public User(String name, String password, String email) {
+    public User(String name, String password, String email, String username) {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.username = username;
     }
+
+    public User(String username, String password) {
+        this.username=username;
+        this.password= password;
+    }
+
 
     public void add(Task task){
         if(tasks == null){
@@ -87,4 +93,6 @@ public class User {
                 ", username='" + username + '\'' +
                 '}';
     }
+
+
 }
