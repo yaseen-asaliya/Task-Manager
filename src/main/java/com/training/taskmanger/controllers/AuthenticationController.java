@@ -74,11 +74,7 @@ public class AuthenticationController {
                          signUpRequest.getUsername()
     );
 
-
-    System.out.println(user.getPassword());
     userRepository.save(user);
-    System.out.println(user.getPassword());
-
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
 
