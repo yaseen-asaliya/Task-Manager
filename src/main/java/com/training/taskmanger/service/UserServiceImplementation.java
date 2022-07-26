@@ -23,12 +23,9 @@ public class UserServiceImplementation implements Services<User> {
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private UserRepository userRepository;
 
-
-
     public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
 
     @Override
     public List<User> findAll() {

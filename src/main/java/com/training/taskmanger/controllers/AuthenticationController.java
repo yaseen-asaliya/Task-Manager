@@ -49,6 +49,7 @@ public class AuthenticationController {
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
         .body(new UserInfoResponse(userDetails.getId(),
                                    userDetails.getName(),
@@ -74,7 +75,9 @@ public class AuthenticationController {
     );
 
 
+    System.out.println(user.getPassword());
     userRepository.save(user);
+    System.out.println(user.getPassword());
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }

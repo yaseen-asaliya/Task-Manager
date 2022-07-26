@@ -28,12 +28,6 @@ public class User {
         this.username = username;
     }
 
-    public User(String username, String password) {
-        this.username=username;
-        this.password= password;
-    }
-
-
     public void add(Task task){
         if(tasks == null){
             tasks = new ArrayList<>();
@@ -93,6 +87,4 @@ public class User {
                 ", username='" + username + '\'' +
                 '}';
     }
-
-
 }
