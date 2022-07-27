@@ -6,9 +6,10 @@ import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.http.request.LoginRequest;
 import com.training.taskmanger.security.http.request.SignupRequest;
 import com.training.taskmanger.security.http.response.MessageResponse;
-import com.training.taskmanger.security.http.response.UserInfoResponse;
 import com.training.taskmanger.security.jwt.JwtUtils;
 import com.training.taskmanger.service.UserDetailsImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -38,6 +39,9 @@ public class AuthenticationController {
   @Autowired
   JwtUtils jwtUtils;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
+
+
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -45,16 +49,13 @@ public class AuthenticationController {
         .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
+    LOGGER.info("Authentication successfully");
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-        .body(new UserInfoResponse(userDetails.getId(),
-                                   userDetails.getName(),
-                                   userDetails.getEmail(),
-                                   userDetails.getPassword()));
+            .body(new MessageResponse("Login Successfully!!"));
   }
 
   @PostMapping("/signup")
@@ -84,4 +85,5 @@ public class AuthenticationController {
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new MessageResponse("You've been signed out!"));
   }
+
 }

@@ -23,7 +23,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   @Autowired
   private UserServiceImplementation userServiceImplementation;
 
-  private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -32,11 +32,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
+        LOGGER.info("doFilterInternal :: Username after got from jwt : " + username);
         UserDetails userDetails = userServiceImplementation.loadUserByUsername(username);
         UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(userDetails,
-                                                    null,
-                                                    userDetails.getAuthorities());
+            new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
         
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -44,7 +43,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       }
 
     } catch (Exception e) {
-      logger.error("Cannot set user authentication: {}", e);
+      LOGGER.error("Cannot set user authentication: {}", e);
     }
 
     filterChain.doFilter(request, response);
@@ -52,6 +51,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   private String parseJwt(HttpServletRequest request) {
     String jwt = jwtUtils.getJwtFromCookies(request);
+    LOGGER.info("parseJwt :: Token after parse : " + jwt);
     return jwt;
   }
 }

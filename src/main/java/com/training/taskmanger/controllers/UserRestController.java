@@ -25,6 +25,7 @@ public class UserRestController {
         LOGGER.info("User Controller created successfully");
     }
 
+
     @GetMapping("/users")
     public List<Object> getUsers(){
         return userService.findAll();
@@ -67,4 +68,6 @@ public class UserRestController {
         LOGGER.debug("User deleted completed.");
         return tempUser.toString() + " deleted successfully.";
     }
+
+
 }

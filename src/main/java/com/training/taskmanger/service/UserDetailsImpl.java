@@ -27,12 +27,13 @@ public class UserDetailsImpl implements UserDetails {
 
   private static Collection<? extends GrantedAuthority> authorities;
 
-  public UserDetailsImpl(int id, String username, String email, String password,
+  public UserDetailsImpl(int id, String username, String email, String password,String name,
       Collection<? extends GrantedAuthority> authorities) {
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
+    this.name = name;
     this.authorities = authorities;
   }
 
@@ -43,6 +44,7 @@ public class UserDetailsImpl implements UserDetails {
         user.getUsername(), 
         user.getEmail(),
         user.getPassword(),
+            user.getName(),
             authorities);
   }
 
