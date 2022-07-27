@@ -3,7 +3,7 @@ package com.training.taskmanger.security;
 
 import com.training.taskmanger.security.jwt.AuthEntryPointJwt;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
-import com.training.taskmanger.service.UserDetailsServiceImpl;
+import com.training.taskmanger.service.UserServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
-  UserDetailsServiceImpl userDetailsService;
+  UserServiceImplementation userServiceImplementation;
 
   @Autowired
   private AuthEntryPointJwt unauthorizedHandler;
@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-    authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    authenticationManagerBuilder.userDetailsService(userServiceImplementation).passwordEncoder(passwordEncoder());
   }
 
   @Bean

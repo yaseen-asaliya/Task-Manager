@@ -7,21 +7,27 @@ import com.training.taskmanger.controllers.TaskRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImplementation implements Services<User> {
+public class UserServiceImplementation implements Services<User>,UserDetailsService {
 
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private UserRepository userRepository;
+
+    private static Collection<? extends GrantedAuthority> authorities;
+
 
     public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -29,7 +35,7 @@ public class UserServiceImplementation implements Services<User> {
 
     @Override
     public List<User> findAll() {
-        if(userRepository.findAll().isEmpty()){
+        if (userRepository.findAll().isEmpty()) {
             throw new IllegalArgumentException("No users available.");
         }
         LOGGER.debug("The data was token from database.");
@@ -41,10 +47,9 @@ public class UserServiceImplementation implements Services<User> {
         Optional<User> result = userRepository.findById(userId);
 
         User user = null;
-        if(result.isPresent()){
+        if (result.isPresent()) {
             user = result.get();
-        }
-        else{
+        } else {
             LOGGER.warn("Wrong id passed.");
             throw new NotFoundException("User with id -" + userId + "- not found.");
         }
@@ -62,6 +67,13 @@ public class UserServiceImplementation implements Services<User> {
         userRepository.deleteById(userId);
     }
 
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
+        return UserDetailsImpl.build(user);
+    }
 
 }
