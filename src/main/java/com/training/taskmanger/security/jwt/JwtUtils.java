@@ -56,7 +56,6 @@ public class JwtUtils {
   }
 
 
-
   // for signout
   public ResponseCookie getCleanJwtCookie() {
     ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
@@ -73,6 +72,7 @@ public class JwtUtils {
     LOGGER.debug("getUserNameFromJwtToken :: Getting id from token..");
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getId();
   }
+
 
   public boolean validateJwtToken(String authToken) {
     try {

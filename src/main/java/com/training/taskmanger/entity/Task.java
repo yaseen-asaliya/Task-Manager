@@ -60,7 +60,8 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "userId=" + getUser() +
+                "id=" + id +
+                ", user=" + user +
                 ", description='" + description + '\'' +
                 ", completed=" + completed +
                 '}';

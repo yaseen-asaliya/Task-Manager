@@ -6,16 +6,13 @@ import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.controllers.TaskRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +64,9 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
         userRepository.deleteById(userId);
     }
 
+
+
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -76,4 +76,9 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
         return UserDetailsImpl.build(user);
     }
 
+    //unused
+    @Override
+    public List<Object> getTasks(int userId) {
+        return null;
+    }
 }

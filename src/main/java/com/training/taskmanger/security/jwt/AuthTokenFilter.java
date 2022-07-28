@@ -25,6 +25,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
 
+  private int id;
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
@@ -32,8 +34,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
-        int id = Integer.parseInt(jwtUtils.getIdFromJwtToken(jwt));
+        id = Integer.parseInt(jwtUtils.getIdFromJwtToken(jwt));
         LOGGER.info("doFilterInternal :: Get username = " + username + " & id = " + id + " from jwt.");
+
         UserDetails userDetails = userServiceImplementation.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken authentication =
@@ -56,4 +59,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     LOGGER.info("parseJwt :: Token after parse : " + jwt);
     return jwt;
   }
+
+  public int getId() {
+    return id;
+  }
+
 }

@@ -1,6 +1,7 @@
 package com.training.taskmanger.service;
 
 import com.training.taskmanger.entity.Task;
+import com.training.taskmanger.entity.User;
 import com.training.taskmanger.repository.TaskRepository;
 import com.training.taskmanger.exception.NotFoundException;
 import org.slf4j.Logger;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -23,14 +26,11 @@ public class TaskServiceImplementation implements Services<Task> {
         this.taskRepository = taskRepository;
     }
 
-    @Override
-    public List<Task> findAll() {
-        if(taskRepository.findAll().isEmpty()){
-            throw new IllegalArgumentException("No tasks available.");
-        }
-        LOGGER.debug("The data was token from database.");
-        return taskRepository.findAll();
+    public List<Object> getTasks(int userId){
+        return taskRepository.findTasksByUserId(userId);
     }
+
+    ////////////////////////////// Done //////////////////////////////////////
 
     @Override
     public Task findById(int taskId) {
@@ -58,6 +58,9 @@ public class TaskServiceImplementation implements Services<Task> {
         taskRepository.deleteById(taskId);
     }
 
-
-
+    // unused
+    @Override
+    public List<Task> findAll() {
+        return null;
+    }
 }
