@@ -19,24 +19,13 @@ import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements Services<User>,UserDetailsService {
-
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private UserRepository userRepository;
 
     private static Collection<? extends GrantedAuthority> authorities;
 
-
     public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    @Override
-    public List<User> findAll() {
-        if (userRepository.findAll().isEmpty()) {
-            throw new IllegalArgumentException("No users available.");
-        }
-        LOGGER.debug("The data was token from database.");
-        return userRepository.findAll();
     }
 
     @Override
@@ -64,9 +53,6 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
         userRepository.deleteById(userId);
     }
 
-
-
-
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -76,7 +62,6 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
         return UserDetailsImpl.build(user);
     }
 
-    //unused
     @Override
     public List<Object> getTasks(int userId) {
         return null;

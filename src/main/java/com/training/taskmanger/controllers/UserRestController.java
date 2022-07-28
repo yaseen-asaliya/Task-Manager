@@ -53,7 +53,6 @@ public class UserRestController {
         return user + " updated successfully.";
     }
 
-    // remove user id
     @DeleteMapping("/user")
     public String deleteUser(){
         int userId = authTokenFilter.getId();
@@ -67,14 +66,5 @@ public class UserRestController {
         return tempUser.toString() + " deleted successfully.";
     }
 
-    private int verifyUserId(User user){
-        int userId = authTokenFilter.getId();
-        if(user.getId() != userId){
-            LOGGER.error("you are not authorized - Wrong user id");
-            throw new NotFoundException("User with id -" + userId +  "- not found.");
-        }
-
-        return userId;
-    }
 
 }

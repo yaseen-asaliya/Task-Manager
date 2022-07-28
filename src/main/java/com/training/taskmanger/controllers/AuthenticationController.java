@@ -41,7 +41,6 @@ public class AuthenticationController {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
-
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
