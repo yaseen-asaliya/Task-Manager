@@ -1,5 +1,6 @@
 package com.training.taskmanger.security.jwt;
 
+import com.training.taskmanger.entity.User;
 import com.training.taskmanger.service.UserServiceImplementation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
 
-  private int id;
+  private int userId;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -34,13 +35,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
-        id = Integer.parseInt(jwtUtils.getIdFromJwtToken(jwt));
-        LOGGER.info("doFilterInternal :: Get username = " + username + " & id = " + id + " from jwt.");
+        userId = Integer.parseInt(jwtUtils.getIdFromJwtToken(jwt));
+        LOGGER.info("doFilterInternal :: got username = " + username + " with id = " + userId + " from jwt.");
 
         UserDetails userDetails = userServiceImplementation.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+            new UsernamePasswordAuthenticationToken(userDetails,null,null);
         
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -60,8 +61,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     return jwt;
   }
 
-  public int getId() {
-    return id;
+  public int getUserId() {
+    return userId;
   }
 
 }

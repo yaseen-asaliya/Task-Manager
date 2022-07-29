@@ -6,14 +6,12 @@ import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.controllers.TaskRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,8 +19,6 @@ import java.util.Optional;
 public class UserServiceImplementation implements Services<User>,UserDetailsService {
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
     private UserRepository userRepository;
-
-    private static Collection<? extends GrantedAuthority> authorities;
 
     public UserServiceImplementation(UserRepository userRepository) {
         this.userRepository = userRepository;

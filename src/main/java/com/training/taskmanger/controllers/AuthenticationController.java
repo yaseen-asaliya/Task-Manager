@@ -20,13 +20,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
+  private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
   @Autowired
   AuthenticationManager authenticationManager;
 
@@ -38,8 +38,6 @@ public class AuthenticationController {
 
   @Autowired
   JwtUtils jwtUtils;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtils.class);
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -67,7 +65,6 @@ public class AuthenticationController {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
     }
 
-    // Create new user's account
     User user = new User(signUpRequest.getName(),
                          encoder.encode(signUpRequest.getPassword()),
                          signUpRequest.getEmail(),
@@ -77,12 +74,10 @@ public class AuthenticationController {
     userRepository.save(user);
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
-
   @PostMapping("/signout")
   public ResponseEntity<?> logoutUser() {
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new MessageResponse("You've been signed out!"));
   }
-
 }

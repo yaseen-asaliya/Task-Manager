@@ -1,8 +1,6 @@
 package com.training.taskmanger.controllers;
 
-import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
-import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
 import com.training.taskmanger.service.Services;
 import org.slf4j.Logger;
@@ -11,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -33,19 +29,17 @@ public class UserRestController {
         LOGGER.info("User Controller created successfully");
     }
 
-
+    // Get current user information
     @GetMapping("/user")
     public User getCurrentUser(){
-        int userId = authTokenFilter.getId();
+        int userId = authTokenFilter.getUserId();
         return (User) userService.findById(userId);
     }
 
+    // Update current user information
     @PutMapping("/user")
     public String updateUser(@RequestBody User user){
-        int userId = authTokenFilter.getId();
-        if(user == null){
-            throw new NullPointerException("User is null");
-        }
+        int userId = authTokenFilter.getUserId();
         user.setPassword(encoder.encode(user.getPassword()));
         user.setId(userId);
         userService.saveObject(user);
@@ -53,14 +47,11 @@ public class UserRestController {
         return user + " updated successfully.";
     }
 
+    // Delete Current user
     @DeleteMapping("/user")
     public String deleteUser(){
-        int userId = authTokenFilter.getId();
+        int userId = authTokenFilter.getUserId();
         User tempUser = (User)userService.findById(userId);
-        if(tempUser==null){
-            LOGGER.warn("Wrong user id passed");
-            throw new NotFoundException("User with id -" + userId + "- not found.");
-        }
         userService.deleteById(userId);
         LOGGER.debug("User deleted completed.");
         return tempUser.toString() + " deleted successfully.";

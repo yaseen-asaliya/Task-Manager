@@ -56,7 +56,7 @@ public class JwtUtils {
   }
 
 
-  // for signout
+  // Remove token from cookie
   public ResponseCookie getCleanJwtCookie() {
     ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
     LOGGER.info("getCleanJwtCookie :: Toke removed from cookie : " + cookie);
@@ -72,7 +72,6 @@ public class JwtUtils {
     LOGGER.debug("getUserNameFromJwtToken :: Getting id from token..");
     return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getId();
   }
-
 
   public boolean validateJwtToken(String authToken) {
     try {
@@ -90,7 +89,7 @@ public class JwtUtils {
     } catch (IllegalArgumentException e) {
       LOGGER.error("JWT claims string is empty: {}", e.getMessage());
     }
-
     return false;
   }
+
 }

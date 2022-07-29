@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,15 +36,20 @@ public class TaskRestController {
         LOGGER.info("Task Controller created successfully");
     }
 
+    // Get all tasks for current user
     @GetMapping("/tasks")
     public List<Object> getAllUserTasks(){
-        int userId = authTokenFilter.getId();
+        int userId = authTokenFilter.getUserId();
+        if(taskService.getTasks(userId).size() == 0){
+            throw new NotFoundException("No tasks available");
+        }
         return taskService.getTasks(userId);
     }
 
+    // Add task for current user
     @PostMapping("/tasks")
     public String addTask(@RequestBody Task task){
-        int userId = authTokenFilter.getId();
+        int userId = authTokenFilter.getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException("User with id -" + userId +  "- not found.");
@@ -56,9 +60,10 @@ public class TaskRestController {
         return task + " added successfully.";
     }
 
+    // Update tasks for current user
     @PutMapping("/tasks")
     public String updateTask(@RequestBody Task task){
-        int userId = authTokenFilter.getId();
+        int userId = authTokenFilter.getUserId();
         Optional<Task> tempTask =taskRepository.findById(task.getId());
         if(tempTask.get().getUser().getId() != userId){
             throw new NotFoundException("This task is not belong to you.");
@@ -76,6 +81,7 @@ public class TaskRestController {
         return task + " updated successfully.";
     }
 
+    // Delete current user tasks
     @DeleteMapping("/tasks/{taskId}")
     public String deleteTask(@PathVariable int taskId){
         Task tempTask = (Task) taskService.findById(taskId);

@@ -23,7 +23,6 @@ public class Task {
     private String description;
     private int completed;
 
-
     public int getId() {
         return id;
     }
@@ -55,7 +54,6 @@ public class Task {
     public void setCompleted(int completed) {
         this.completed = completed;
     }
-
 
     @Override
     public String toString() {
