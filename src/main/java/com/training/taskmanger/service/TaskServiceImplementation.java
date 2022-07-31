@@ -1,12 +1,13 @@
-package com.training.TaskManger.service;
+package com.training.taskmanger.service;
 
-import com.training.TaskManger.entity.Task;
-import com.training.TaskManger.dao.TaskRepository;
-import com.training.TaskManger.exception.NotFoundException;
+import com.training.taskmanger.entity.Task;
+import com.training.taskmanger.repository.TaskRepository;
+import com.training.taskmanger.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,13 +22,8 @@ public class TaskServiceImplementation implements Services<Task> {
         this.taskRepository = taskRepository;
     }
 
-    @Override
-    public List<Task> findAll() {
-        if(taskRepository.findAll().isEmpty()){
-            throw new IllegalArgumentException("No tasks available.");
-        }
-        LOGGER.debug("The data was token from database.");
-        return taskRepository.findAll();
+    public List<Object> getTasks(int userId){
+        return taskRepository.findTasksByUserId(userId);
     }
 
     @Override

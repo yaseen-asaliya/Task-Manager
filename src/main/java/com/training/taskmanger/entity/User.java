@@ -1,11 +1,11 @@
-package com.training.TaskManger.entity;
+package com.training.taskmanger.entity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="user")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,6 +13,7 @@ public class User {
     private String name;
     private String password;
     private String email;
+    private String username;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Task> tasks;
@@ -20,10 +21,11 @@ public class User {
     public User() {
     }
 
-    public User(String name, String password, String email) {
+    public User(String name, String password, String email, String username) {
         this.name = name;
         this.password = password;
         this.email = email;
+        this.username = username;
     }
 
     public void add(Task task){
@@ -66,6 +68,15 @@ public class User {
         this.email = email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
     @Override
     public String toString() {
         return "User{" +
@@ -73,6 +84,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 '}';
     }
 }

@@ -1,4 +1,4 @@
-package com.training.TaskManger.entity;
+package com.training.taskmanger.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,7 +22,6 @@ public class Task {
     private User user;
     private String description;
     private int completed;
-
 
     public int getId() {
         return id;
@@ -56,11 +55,11 @@ public class Task {
         this.completed = completed;
     }
 
-
     @Override
     public String toString() {
         return "Task{" +
-                "userId=" + getUser() +
+                "id=" + id +
+                ", user=" + user +
                 ", description='" + description + '\'' +
                 ", completed=" + completed +
                 '}';

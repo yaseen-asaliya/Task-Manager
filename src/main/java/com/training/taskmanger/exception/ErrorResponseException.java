@@ -1,4 +1,4 @@
-package com.training.TaskManger.exception;
+package com.training.taskmanger.exception;
 
 public class ErrorResponseException {
 

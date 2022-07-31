@@ -1,4 +1,4 @@
-package com.training.TaskManger;
+package com.training.taskmanger;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
