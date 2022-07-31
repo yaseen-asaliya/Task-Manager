@@ -65,6 +65,11 @@ public class TaskRestController {
     public String updateTask(@RequestBody Task task){
         int userId = authTokenFilter.getUserId();
         Optional<Task> tempTask =taskRepository.findById(task.getId());
+        if(tempTask == null){
+            LOGGER.warn("Wrong user id passed");
+            throw new NotFoundException("Task with id -" + task.getId() + "- not found.");
+        }
+
         if(tempTask.get().getUser().getId() != userId){
             throw new NotFoundException("This task is not belong to you.");
         }
@@ -84,11 +89,17 @@ public class TaskRestController {
     // Delete current user tasks
     @DeleteMapping("/tasks/{taskId}")
     public String deleteTask(@PathVariable int taskId){
+        int userId = authTokenFilter.getUserId();
         Task tempTask = (Task) taskService.findById(taskId);
         if(tempTask == null){
             LOGGER.warn("Wrong user id passed");
             throw new NotFoundException("Task with id -" + taskId + "- not found.");
         }
+
+        if(tempTask.getUser().getId() != userId){
+            throw new NotFoundException("This task is not belong to you.");
+        }
+
         taskService.deleteById(taskId);
         LOGGER.debug("Task deleted completed.");
         return tempTask + " deleted successfully.";
