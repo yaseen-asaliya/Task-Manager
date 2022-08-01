@@ -2,10 +2,12 @@ package com.training.taskmanger.controllers;
 
 
 import com.training.taskmanger.entity.User;
+import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.http.request.LoginRequest;
 import com.training.taskmanger.security.http.request.SignupRequest;
 import com.training.taskmanger.security.http.response.MessageResponse;
+import com.training.taskmanger.security.jwt.AuthTokenFilter;
 import com.training.taskmanger.security.jwt.JwtUtils;
 import com.training.taskmanger.service.UserDetailsImpl;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -39,6 +42,9 @@ public class AuthenticationController {
   @Autowired
   JwtUtils jwtUtils;
 
+  @Autowired
+  AuthTokenFilter authTokenFilter;
+
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -50,7 +56,7 @@ public class AuthenticationController {
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
+    setLogoutStatus(false);
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
             .body(new MessageResponse("Login Successfully!!"));
   }
@@ -79,5 +85,21 @@ public class AuthenticationController {
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new MessageResponse("You've been signed out!"));
+  }
+
+  @PostMapping("/signoutAll")
+  public ResponseEntity<?> logoutAll(){
+    setLogoutStatus(true);
+    return ResponseEntity.ok().body(new MessageResponse("Signout frm all places"));
+  }
+
+  private void setLogoutStatus(boolean status) {
+    int userId = authTokenFilter.getUserId();
+    Optional<User> user = userRepository.findById(userId);
+    if(user == null){
+      throw new NotFoundException("User not found");
+    }
+    user.get().setSignout(status);
+    userRepository.save(user.get());
   }
 }
