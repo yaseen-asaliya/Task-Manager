@@ -18,7 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(AuthTokenFilter.class);
@@ -26,10 +25,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   private JwtUtils jwtUtils;
   @Autowired
   private UserServiceImplementation userServiceImplementation;
-  @Autowired
-  private UserRepository userRepository;
-  @Autowired
-  private AuthTokenFilter authTokenFilter;
+
   private int userId;
 
   @Override
@@ -70,16 +66,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   public int getUserId() {
     return userId;
   }
-  private boolean isSignout() {
-    int userId = authTokenFilter.getUserId();
-    Optional<User> user = userRepository.findById(userId);
-    if (user == null) {
-      throw new NotFoundException("User not found");
-    }
-    if (user.get().getSignout()) {
-      return true;
-    }
-    return false;
-  }
+
 
 }

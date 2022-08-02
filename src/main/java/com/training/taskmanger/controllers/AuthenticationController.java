@@ -2,7 +2,6 @@ package com.training.taskmanger.controllers;
 
 
 import com.training.taskmanger.entity.User;
-import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.http.request.LoginRequest;
 import com.training.taskmanger.security.http.request.SignupRequest;
@@ -96,9 +95,6 @@ public class AuthenticationController {
   private void setLogoutStatus(boolean status) {
     int userId = authTokenFilter.getUserId();
     Optional<User> user = userRepository.findById(userId);
-    if(user == null){
-      throw new NotFoundException("User not found");
-    }
     user.get().setSignout(status);
     userRepository.save(user.get());
   }
