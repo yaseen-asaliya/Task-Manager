@@ -27,7 +27,6 @@ public class TaskServiceImplementation implements Services<Task> {
     }
 
     public List<Task> getTasks(int userId){
-        System.out.println(extractTasks(userId));
         return extractTasks(userId);
     }
 

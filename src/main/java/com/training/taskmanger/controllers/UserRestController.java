@@ -12,25 +12,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PreDestroy;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class UserRestController {
     public final Logger LOGGER = LoggerFactory.getLogger(UserRestController.class.getName());
-    private final String UNAUTHORIZED_MESSAGE = "You're unauthorized";
     private Services userService;
     @Autowired
     PasswordEncoder encoder;
-
     @Autowired
     private AuthTokenFilter authTokenFilter;
 
     @Autowired
     private UserRepository userRepository;
 
-    public UserRestController(){
-    }
+    private int userId;
+
     @Autowired
     public UserRestController(@Qualifier("userServiceImplementation") Services userService) {
         this.userService = userService;
@@ -41,7 +40,7 @@ public class UserRestController {
     @GetMapping("/user")
     public User getCurrentUser(){
         checkIfLogin();
-        int userId = authTokenFilter.getUserId();
+        userId = authTokenFilter.getUserId();
         return (User) userService.findById(userId);
     }
 
@@ -49,7 +48,7 @@ public class UserRestController {
     @PutMapping("/user")
     public String updateUser(@RequestBody User user){
         checkIfLogin();
-        int userId = authTokenFilter.getUserId();
+        userId = authTokenFilter.getUserId();
         user.setPassword(encoder.encode(user.getPassword()));
         user.setId(userId);
         userService.saveObject(user);
@@ -61,14 +60,21 @@ public class UserRestController {
     @DeleteMapping("/user")
     public String deleteUser(){
         checkIfLogin();
-        int userId = authTokenFilter.getUserId();
+        userId = authTokenFilter.getUserId();
         User tempUser = (User)userService.findById(userId);
         userService.deleteById(userId);
         LOGGER.debug("User deleted completed.");
         return tempUser.toString() + " deleted successfully.";
     }
+
+    @PreDestroy
+    public void resetIsSignoutColumn() {
+        LOGGER.info("Reset all users to signout.");
+        userRepository.resetIsSignout();
+    }
+
     private boolean isSignout() {
-        int userId = authTokenFilter.getUserId();
+        userId = authTokenFilter.getUserId();
         Optional<User> user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -83,5 +89,4 @@ public class UserRestController {
             throw new RuntimeException("You're unauthorized");
         }
     }
-
 }

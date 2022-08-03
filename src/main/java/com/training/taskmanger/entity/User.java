@@ -31,10 +31,6 @@ public class User {
         this.isSignout= false;
     }
 
-    public User(int id) {
-        this.id = id;
-    }
-
     public void add(Task task){
         if(tasks == null){
             tasks = new ArrayList<>();

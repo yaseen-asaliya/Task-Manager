@@ -1,7 +1,9 @@
-package com.training.taskmanger.startendtime;
+package com.training.taskmanger.timeconflict;
 
 import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.service.TaskServiceImplementation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,6 +12,9 @@ import java.util.Date;
 import java.util.List;
 
 public class TimeConflict {
+    private final int NOT_CONFLICT = 0;
+    public final Logger LOGGER = LoggerFactory.getLogger(TimeConflict.class.getName());
+
     private TaskServiceImplementation taskServiceImplementation;
     private int userId;
     private int taskId;
@@ -21,6 +26,7 @@ public class TimeConflict {
     }
 
     public boolean isConflict(String start,String finish) throws ParseException {
+        LOGGER.info("Checking conflict...");
         boolean overlap = false;
         List<Task> tasks = taskServiceImplementation.getTasks(userId);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
@@ -30,7 +36,7 @@ public class TimeConflict {
         for (int i=0 ;i < tasks.size() && tasks.get(i).getId() != taskId; i++) {
             Date newStart =  dateFormat.parse(tasks.get(i).getStart());
             Date newEnd =  dateFormat.parse(tasks.get(i).getFinish());
-            overlap = newStart.compareTo(endDate) <= 0 && newEnd.compareTo(startDate) >= 0;
+            overlap = newStart.compareTo(endDate) <= NOT_CONFLICT && newEnd.compareTo(startDate) >= NOT_CONFLICT;
             if(overlap)
                 break;
         }
