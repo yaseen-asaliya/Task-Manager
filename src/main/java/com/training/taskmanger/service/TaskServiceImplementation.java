@@ -27,6 +27,7 @@ public class TaskServiceImplementation implements Services<Task> {
     }
 
     public List<Task> getTasks(int userId){
+        System.out.println(extractTasks(userId));
         return extractTasks(userId);
     }
 
@@ -71,7 +72,6 @@ public class TaskServiceImplementation implements Services<Task> {
                     (int) row[2],
                     (String) row[3],
                     (String) row[4]);
-            System.out.println(task);
             tasks.add(task);
         }
         return tasks;
