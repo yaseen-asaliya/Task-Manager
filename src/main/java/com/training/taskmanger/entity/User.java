@@ -14,6 +14,8 @@ public class User {
     private String password;
     private String email;
     private String username;
+    @Column(name = "is_signout")
+    private boolean isSignout;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Task> tasks;
@@ -26,6 +28,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.username = username;
+        this.isSignout= false;
     }
 
     public void add(Task task){
@@ -76,6 +79,13 @@ public class User {
         this.username = username;
     }
 
+    public boolean getSignout() {
+        return isSignout;
+    }
+
+    public void setSignout(boolean signout) {
+        isSignout = signout;
+    }
 
     @Override
     public String toString() {
@@ -85,6 +95,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
+                ", isSignout='" + isSignout + '\'' +
                 '}';
     }
 }
