@@ -40,9 +40,7 @@ public class UserRestController {
     // Get current user information
     @GetMapping("/user")
     public User getCurrentUser(){
-        if(isSignout()){
-            throw new RuntimeException(UNAUTHORIZED_MESSAGE);
-        }
+        checkIfLogin();
         int userId = authTokenFilter.getUserId();
         return (User) userService.findById(userId);
     }
@@ -50,9 +48,7 @@ public class UserRestController {
     // Update current user information
     @PutMapping("/user")
     public String updateUser(@RequestBody User user){
-        if(isSignout()){
-            throw new RuntimeException(UNAUTHORIZED_MESSAGE);
-        }
+        checkIfLogin();
         int userId = authTokenFilter.getUserId();
         user.setPassword(encoder.encode(user.getPassword()));
         user.setId(userId);
@@ -64,9 +60,7 @@ public class UserRestController {
     // Delete Current user
     @DeleteMapping("/user")
     public String deleteUser(){
-        if(isSignout()){
-            throw new RuntimeException(UNAUTHORIZED_MESSAGE);
-        }
+        checkIfLogin();
         int userId = authTokenFilter.getUserId();
         User tempUser = (User)userService.findById(userId);
         userService.deleteById(userId);
@@ -83,6 +77,11 @@ public class UserRestController {
             return true;
         }
         return false;
+    }
+    private void checkIfLogin(){
+        if(isSignout()){
+            throw new RuntimeException("You're unauthorized");
+        }
     }
 
 }
