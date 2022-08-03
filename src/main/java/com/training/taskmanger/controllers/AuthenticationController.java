@@ -89,7 +89,7 @@ public class AuthenticationController {
   @PostMapping("/signoutAll")
   public ResponseEntity<?> logoutAll(){
     setLogoutStatus(true);
-    return ResponseEntity.ok().body(new MessageResponse("Signout frm all places"));
+    return ResponseEntity.ok().body(new MessageResponse("Signout from all places"));
   }
 
   private void setLogoutStatus(boolean status) {
