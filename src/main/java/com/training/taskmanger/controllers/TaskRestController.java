@@ -7,14 +7,14 @@ import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
 import com.training.taskmanger.service.Services;
-import org.aspectj.lang.annotation.Before;
+import com.training.taskmanger.service.TaskServiceImplementation;
+import com.training.taskmanger.timeconflict.TimeConflict;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +22,8 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class TaskRestController {
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
+
+    private final int EMPTY_LIST = 0;
     private Services taskService;
     @Autowired
     private UserRepository userRepository;
@@ -33,6 +35,11 @@ public class TaskRestController {
     private AuthTokenFilter authTokenFilter;
 
     @Autowired
+    private TaskServiceImplementation taskServiceImplementation;
+
+    private int userId;
+
+    @Autowired
     public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
         this.taskService = taskService;
         LOGGER.info("Task Controller created successfully");
@@ -40,10 +47,10 @@ public class TaskRestController {
 
     // Get all tasks for current user
     @GetMapping("/tasks")
-    public List<Object> getAllUserTasks(){
+    public List<Task> getAllUserTasks() {
         checkIfLogin();
-        int userId = authTokenFilter.getUserId();
-        if(taskService.getTasks(userId).size() == 0){
+        userId = authTokenFilter.getUserId();
+        if(taskService.getTasks(userId).size() == EMPTY_LIST){
             throw new NotFoundException("No tasks available");
         }
         return taskService.getTasks(userId);
@@ -51,9 +58,10 @@ public class TaskRestController {
 
     // Add task for current user
     @PostMapping("/tasks")
-    public String addTask(@RequestBody Task task){
+    public String addTask(@RequestBody Task task)  {
         checkIfLogin();
-        int userId = authTokenFilter.getUserId();
+        checkConflict(task);
+        userId = authTokenFilter.getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException("User with id -" + userId +  "- not found.");
@@ -68,7 +76,8 @@ public class TaskRestController {
     @PutMapping("/tasks")
     public String updateTask(@RequestBody Task task){
         checkIfLogin();
-        int userId = authTokenFilter.getUserId();
+        checkConflict(task);
+        userId = authTokenFilter.getUserId();
         Optional<Task> tempTask =taskRepository.findById(task.getId());
         if(tempTask == null){
             LOGGER.warn("Wrong user id passed");
@@ -85,7 +94,6 @@ public class TaskRestController {
         }
         optionalUser.get().setId(userId);
         task.setUser(optionalUser.get());
-
         taskService.saveObject(task);
         LOGGER.debug("Task updated completed.");
         return task + " updated successfully.";
@@ -111,8 +119,9 @@ public class TaskRestController {
         return tempTask + " deleted successfully.";
     }
 
+
     private boolean isSignout() {
-        int userId = authTokenFilter.getUserId();
+        userId = authTokenFilter.getUserId();
         Optional<User> user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -126,6 +135,18 @@ public class TaskRestController {
     private void checkIfLogin(){
         if(isSignout()){
             throw new RuntimeException("You're unauthorized");
+        }
+    }
+
+    private void checkConflict(Task task){
+        try {
+            TimeConflict timeConflict = new TimeConflict(userId, taskServiceImplementation,task.getId());
+            if(timeConflict.isConflict(task.getStart(), task.getFinish()) == true){
+                throw new RuntimeException("Conflict between tasks times.");
+            }
+        } catch (Exception exp){
+            exp.getStackTrace();
+            throw new RuntimeException("Conflict between tasks times.");
         }
     }
 }

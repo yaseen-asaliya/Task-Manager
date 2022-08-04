@@ -1,5 +1,6 @@
 package com.training.taskmanger.service;
 
+import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.exception.NotFoundException;
@@ -59,7 +60,7 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
     }
 
     @Override
-    public List<Object> getTasks(int userId) {
+    public List<Task> getTasks(int userId) {
         return null;
     }
 }
