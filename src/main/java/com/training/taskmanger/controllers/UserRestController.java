@@ -28,8 +28,6 @@ public class UserRestController {
     @Autowired
     private UserRepository userRepository;
 
-    private int userId;
-
     @Autowired
     public UserRestController(@Qualifier("userServiceImplementation") Services userService) {
         this.userService = userService;
@@ -40,7 +38,7 @@ public class UserRestController {
     @GetMapping("/user")
     public User getCurrentUser(){
         checkIfLogin();
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         return (User) userService.findById(userId);
     }
 
@@ -48,7 +46,7 @@ public class UserRestController {
     @PutMapping("/user")
     public String updateUser(@RequestBody User user){
         checkIfLogin();
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         user.setPassword(encoder.encode(user.getPassword()));
         user.setId(userId);
         userService.saveObject(user);
@@ -60,7 +58,7 @@ public class UserRestController {
     @DeleteMapping("/user")
     public String deleteUser(){
         checkIfLogin();
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         User tempUser = (User)userService.findById(userId);
         userService.deleteById(userId);
         LOGGER.debug("User deleted completed.");
@@ -74,7 +72,7 @@ public class UserRestController {
     }
 
     private boolean isSignout() {
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         Optional<User> user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");

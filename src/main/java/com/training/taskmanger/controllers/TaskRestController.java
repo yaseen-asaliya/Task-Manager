@@ -37,8 +37,6 @@ public class TaskRestController {
     @Autowired
     private TaskServiceImplementation taskServiceImplementation;
 
-    private int userId;
-
     @Autowired
     public TaskRestController(@Qualifier("taskServiceImplementation") Services taskService) {
         this.taskService = taskService;
@@ -49,7 +47,7 @@ public class TaskRestController {
     @GetMapping("/tasks")
     public List<Task> getAllUserTasks() {
         checkIfLogin();
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         if(taskService.getTasks(userId).size() == EMPTY_LIST){
             throw new NotFoundException("No tasks available");
         }
@@ -61,7 +59,7 @@ public class TaskRestController {
     public String addTask(@RequestBody Task task)  {
         checkIfLogin();
         checkConflict(task);
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             throw new NotFoundException("User with id -" + userId +  "- not found.");
@@ -77,7 +75,7 @@ public class TaskRestController {
     public String updateTask(@RequestBody Task task){
         checkIfLogin();
         checkConflict(task);
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         Optional<Task> tempTask =taskRepository.findById(task.getId());
         if(tempTask == null){
             LOGGER.warn("Wrong user id passed");
@@ -121,7 +119,7 @@ public class TaskRestController {
 
 
     private boolean isSignout() {
-        userId = authTokenFilter.getUserId();
+        int userId = authTokenFilter.getUserId();
         Optional<User> user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -140,8 +138,9 @@ public class TaskRestController {
 
     private void checkConflict(Task task){
         try {
-            TimeConflict timeConflict = new TimeConflict(userId, taskServiceImplementation,task.getId());
-            if(timeConflict.isConflict(task.getStart(), task.getFinish()) == true){
+            int userId = authTokenFilter.getUserId();
+            TimeConflict timeConflict = new TimeConflict(taskServiceImplementation);
+            if(timeConflict.isConflict(task.getStart(), task.getFinish(),userId,task.getId()) == true){
                 throw new RuntimeException("Conflict between tasks times.");
             }
         } catch (Exception exp){

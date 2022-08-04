@@ -16,16 +16,12 @@ public class TimeConflict {
     public final Logger LOGGER = LoggerFactory.getLogger(TimeConflict.class.getName());
 
     private TaskServiceImplementation taskServiceImplementation;
-    private int userId;
-    private int taskId;
 
-    public TimeConflict(int userId, TaskServiceImplementation taskServiceImplementation, int taskId) {
-        this.userId =userId;
+    public TimeConflict(TaskServiceImplementation taskServiceImplementation) {
         this.taskServiceImplementation = taskServiceImplementation;
-        this.taskId = taskId;
     }
 
-    public boolean isConflict(String start,String finish) throws ParseException {
+    public boolean isConflict(String start,String finish,int userId,int taskId) throws ParseException {
         LOGGER.info("Checking conflict...");
         boolean overlap = false;
         List<Task> tasks = taskServiceImplementation.getTasks(userId);
@@ -37,8 +33,9 @@ public class TimeConflict {
             Date newStart =  dateFormat.parse(tasks.get(i).getStart());
             Date newEnd =  dateFormat.parse(tasks.get(i).getFinish());
             overlap = newStart.compareTo(endDate) <= NOT_CONFLICT && newEnd.compareTo(startDate) >= NOT_CONFLICT;
-            if(overlap)
+            if(overlap){
                 break;
+            }
         }
         return overlap;
     }

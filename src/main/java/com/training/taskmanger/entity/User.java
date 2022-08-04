@@ -28,7 +28,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.username = username;
-        this.isSignout= false;
+        this.isSignout= true;
     }
 
     public void add(Task task){
