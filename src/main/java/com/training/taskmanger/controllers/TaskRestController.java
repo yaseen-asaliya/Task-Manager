@@ -13,10 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequestMapping("/api")
@@ -45,13 +51,31 @@ public class TaskRestController {
 
     // Get all tasks for current user
     @GetMapping("/tasks")
-    public List<Task> getAllUserTasks() {
+    public Page<Task> getAllUserTasks(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<String> sortBy,
+            @RequestParam Optional<Integer> pageSize,
+            @RequestParam Optional<String> sortDirection
+    ) {
         checkIfLogin();
         int userId = authTokenFilter.getUserId();
         if(taskService.getTasks(userId).size() == EMPTY_LIST){
             throw new NotFoundException("No tasks available");
         }
-        return taskService.getTasks(userId);
+        Sort.Direction sort = null;
+        if(sortDirection.get().equals("ascending")){
+            sort = ASC;
+        }
+        else if (sortDirection.get().equals("descending")){
+            sort = DESC;
+        }
+        else {
+            throw new NotFoundException("Wrong direction passed.");
+        }
+        Pageable paging = PageRequest.of(page.orElse(0), pageSize.get(), sort,sortBy.orElse("start"));
+
+        taskService.getTasks(userId);
+        return taskRepository.findAll(paging);
     }
 
     // Add task for current user

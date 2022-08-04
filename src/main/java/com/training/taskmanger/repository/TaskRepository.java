@@ -3,11 +3,12 @@ package com.training.taskmanger.repository;
 import com.training.taskmanger.entity.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface TaskRepository extends JpaRepository<Task,Integer> {
+public interface TaskRepository extends JpaRepository<Task,Integer> , PagingAndSortingRepository<Task,Integer> {
 
     @Query(value = "select id,description,completed,start,finish,user.id from Task where user.id = :#{#userId}")
     //@Query(value = "select * from Task where user.id = :#{#userId}",nativeQuery = true)
