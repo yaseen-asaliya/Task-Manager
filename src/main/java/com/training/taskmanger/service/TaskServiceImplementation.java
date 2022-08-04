@@ -8,6 +8,8 @@ import com.training.taskmanger.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -25,9 +27,14 @@ public class TaskServiceImplementation implements Services<Task> {
     public TaskServiceImplementation(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
-
+    @Override
     public List<Task> getTasks(int userId){
         return extractTasks(userId);
+    }
+
+    @Override
+    public Page<Task> getTasks(int userId, Pageable pageable) {
+        return null;
     }
 
     @Override

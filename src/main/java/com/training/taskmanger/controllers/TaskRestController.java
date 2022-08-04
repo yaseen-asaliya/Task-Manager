@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -28,6 +29,9 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/api")
 public class TaskRestController {
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
+
+    private final int FIRST_PAGE = 0;
+    private final String DEFULT_SORT = "start";
 
     private final int EMPTY_LIST = 0;
     private Services taskService;
@@ -72,9 +76,11 @@ public class TaskRestController {
         else {
             throw new NotFoundException("Wrong direction passed.");
         }
-        Pageable paging = PageRequest.of(page.orElse(0), pageSize.get(), sort,sortBy.orElse("start"));
+        Pageable paging = PageRequest.of(page.orElse(FIRST_PAGE), pageSize.get(), sort,sortBy.orElse(DEFULT_SORT));
 
-        taskService.getTasks(userId);
+        taskService.getTasks(userId,paging);
+        Page<Task> x = taskRepository.findAll(paging);
+        System.out.println(x.get().collect(Collectors.toList()));
         return taskRepository.findAll(paging);
     }
 
