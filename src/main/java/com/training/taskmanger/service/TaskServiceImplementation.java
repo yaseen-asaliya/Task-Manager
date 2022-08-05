@@ -1,10 +1,8 @@
 package com.training.taskmanger.service;
 
 import com.training.taskmanger.entity.Task;
-import com.training.taskmanger.entity.User;
 import com.training.taskmanger.repository.TaskRepository;
 import com.training.taskmanger.exception.NotFoundException;
-import com.training.taskmanger.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,7 @@ public class TaskServiceImplementation implements Services<Task> {
 
     @Override
     public Page<Task> getTasks(int userId, Pageable pageable) {
-        return null;
+        return taskRepository.findTasksByUserIdWithPagination(userId,pageable);
     }
 
     @Override

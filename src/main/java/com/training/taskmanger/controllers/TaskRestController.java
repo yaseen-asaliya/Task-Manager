@@ -29,11 +29,12 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/api")
 public class TaskRestController {
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
-
     private final int FIRST_PAGE = 0;
-    private final String DEFULT_SORT = "start";
-
+    private final String DEFAULT_SORT = "start";
+    private final String ASCENDING_DIRECTION = "ascending";
+    private final String DESCENDING_DIRECTION = "descending";
     private final int EMPTY_LIST = 0;
+    private final int DEFAULT_PAGE_SIZE = 3;
     private Services taskService;
     @Autowired
     private UserRepository userRepository;
@@ -66,22 +67,12 @@ public class TaskRestController {
         if(taskService.getTasks(userId).size() == EMPTY_LIST){
             throw new NotFoundException("No tasks available");
         }
-        Sort.Direction sort = null;
-        if(sortDirection.get().equals("ascending")){
-            sort = ASC;
-        }
-        else if (sortDirection.get().equals("descending")){
-            sort = DESC;
-        }
-        else {
-            throw new NotFoundException("Wrong direction passed.");
-        }
-        Pageable paging = PageRequest.of(page.orElse(FIRST_PAGE), pageSize.get(), sort,sortBy.orElse(DEFULT_SORT));
+        Sort.Direction sort = getDirection(sortDirection);
 
-        taskService.getTasks(userId,paging);
-        Page<Task> x = taskRepository.findAll(paging);
-        System.out.println(x.get().collect(Collectors.toList()));
-        return taskRepository.findAll(paging);
+        Pageable paging = PageRequest
+                .of(page.orElse(FIRST_PAGE), pageSize.orElse(DEFAULT_PAGE_SIZE), sort,sortBy.orElse(DEFAULT_SORT));
+
+        return taskService.getTasks(userId,paging);
     }
 
     // Add task for current user
@@ -147,7 +138,6 @@ public class TaskRestController {
         return tempTask + " deleted successfully.";
     }
 
-
     private boolean isSignout() {
         int userId = authTokenFilter.getUserId();
         Optional<User> user = userRepository.findById(userId);
@@ -177,5 +167,18 @@ public class TaskRestController {
             exp.getStackTrace();
             throw new RuntimeException("Conflict between tasks times.");
         }
+    }
+    private Sort.Direction getDirection(Optional<String> sortDirection){
+        Sort.Direction sort;
+        if(sortDirection.get().equals(ASCENDING_DIRECTION)){
+            sort = ASC;
+        }
+        else if (sortDirection.get().equals(DESCENDING_DIRECTION)){
+            sort = DESC;
+        }
+        else {
+            throw new NotFoundException("Wrong direction passed.");
+        }
+        return sort;
     }
 }
