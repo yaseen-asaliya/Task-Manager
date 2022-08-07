@@ -13,17 +13,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequestMapping("/api")
 public class TaskRestController {
     public final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class.getName());
-
+    private final int FIRST_PAGE = 0;
+    private final String DEFAULT_SORT = "start";
+    private final String ASCENDING_DIRECTION = "ascending";
+    private final String DESCENDING_DIRECTION = "descending";
     private final int EMPTY_LIST = 0;
+    private final int DEFAULT_PAGE_SIZE = 3;
     private Services taskService;
     @Autowired
     private UserRepository userRepository;
@@ -45,13 +56,23 @@ public class TaskRestController {
 
     // Get all tasks for current user
     @GetMapping("/tasks")
-    public List<Task> getAllUserTasks() {
+    public Page<Task> getAllUserTasks(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<String> sortBy,
+            @RequestParam Optional<Integer> pageSize,
+            @RequestParam Optional<String> sortDirection
+    ) {
         checkIfLogin();
         int userId = authTokenFilter.getUserId();
         if(taskService.getTasks(userId).size() == EMPTY_LIST){
             throw new NotFoundException("No tasks available");
         }
-        return taskService.getTasks(userId);
+        Sort.Direction sort = getDirection(sortDirection);
+
+        Pageable paging = PageRequest
+                .of(page.orElse(FIRST_PAGE), pageSize.orElse(DEFAULT_PAGE_SIZE), sort,sortBy.orElse(DEFAULT_SORT));
+
+        return taskService.getTasks(userId,paging);
     }
 
     // Add task for current user
@@ -117,7 +138,6 @@ public class TaskRestController {
         return tempTask + " deleted successfully.";
     }
 
-
     private boolean isSignout() {
         int userId = authTokenFilter.getUserId();
         Optional<User> user = userRepository.findById(userId);
@@ -147,5 +167,18 @@ public class TaskRestController {
             exp.getStackTrace();
             throw new RuntimeException("Conflict between tasks times.");
         }
+    }
+    private Sort.Direction getDirection(Optional<String> sortDirection){
+        Sort.Direction sort;
+        if(sortDirection.get().equals(ASCENDING_DIRECTION)){
+            sort = ASC;
+        }
+        else if (sortDirection.get().equals(DESCENDING_DIRECTION)){
+            sort = DESC;
+        }
+        else {
+            throw new NotFoundException("Wrong direction passed.");
+        }
+        return sort;
     }
 }

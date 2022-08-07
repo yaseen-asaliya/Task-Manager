@@ -1,5 +1,6 @@
 package com.training.taskmanger.repository;
 
+import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

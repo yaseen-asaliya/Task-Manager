@@ -7,6 +7,8 @@ import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.controllers.TaskRestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -61,6 +63,11 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
 
     @Override
     public List<Task> getTasks(int userId) {
+        return null;
+    }
+
+    @Override
+    public Page<Task> getTasks(int userId, Pageable pageable) {
         return null;
     }
 }
