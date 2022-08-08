@@ -43,13 +43,15 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
     }
 
     @Override
-    public void saveObject(User user) {
+    public String saveObject(User user) {
         userRepository.save(user);
+        return "User saved";
     }
 
     @Override
-    public void deleteById(int userId) {
+    public String deleteById(int userId) {
         userRepository.deleteById(userId);
+        return "User deleted";
     }
 
     @Override

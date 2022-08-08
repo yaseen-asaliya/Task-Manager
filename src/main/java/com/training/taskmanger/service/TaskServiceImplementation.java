@@ -49,12 +49,14 @@ public class TaskServiceImplementation implements Services<Task> {
     }
 
     @Override
-    public void saveObject(Task task) {
+    public String saveObject(Task task) {
         taskRepository.save(task);
+        return "Task saved";
     }
 
     @Override
-    public void deleteById(int taskId) {
+    public String deleteById(int taskId) {
         taskRepository.deleteById(taskId);
+        return "Task deleted";
     }
 }

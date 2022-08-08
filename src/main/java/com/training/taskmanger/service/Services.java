@@ -10,9 +10,9 @@ public interface Services<T> {
 
     public T findById(int id);
 
-    public void saveObject(T item);
+    public String saveObject(T item);
 
-    public void deleteById(int id);
+    public String deleteById(int id);
 
     public List<Task> getTasks(int userId);
     public Page<Task> getTasks(int userId, Pageable pageable);
