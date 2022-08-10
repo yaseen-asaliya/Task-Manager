@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -53,6 +52,7 @@ public class TaskRestController {
         this.taskService = taskService;
         LOGGER.info("Task Controller created successfully");
     }
+
 
     // Get all tasks for current user
     @GetMapping("/tasks")

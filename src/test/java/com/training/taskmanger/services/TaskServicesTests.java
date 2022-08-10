@@ -2,72 +2,89 @@ package com.training.taskmanger.services;
 
 import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
+import com.training.taskmanger.repository.TaskRepository;
 import com.training.taskmanger.service.TaskServiceImplementation;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class TaskServicesTests {
 
 	@Mock
-	private TaskServiceImplementation taskService;
+	private TaskRepository taskRepository;
+
+	@InjectMocks
+	private TaskServiceImplementation service;
 
 	@Test
-	void should_get_tasks_for_current_user() {
-		List<Task> expectedList = initializeExpectedList();
-		when(taskService.getTasks(1)).thenReturn(expectedList);
-		assertEquals(expectedList,taskService.getTasks(1));
-	}
-
-	@Test
-	void should_get_tasks_with_pagination_for_current_user() {
-		List<Task> expectedList = initializeExpectedList();
-		Page<Task> page = new PageImpl<>(expectedList);
-		Pageable paging = PageRequest.of(0, 2, Sort.Direction.ASC, String.valueOf(Sort.by("start")));
-		Mockito.when(taskService.getTasks(Mockito.anyInt(), any())).thenReturn(page);
-		assertEquals(page,taskService.getTasks(1,paging));
-	}
-
-	@Test
-	void should_get_taskById() {
+	void shouldGetAllTasks() {
 		User user = initializeUser();
-		Task task = new Task(1, user, "do something....",1,"2022-03-09 08:30:10", "2022-03-09 08:50:00");
-		when(taskService.findById(task.getId())).thenReturn(task);
-		assertEquals(task,taskService.findById(task.getId()));
+		List<Task> taskList = initializeListOfTasks();
+
+		when(taskRepository.findAll()).thenReturn(taskList);
+		service.getTasks(user.getId());
+		assertEquals(taskList,taskRepository.findAll());
 	}
 
 	@Test
-	void should_save_task() {
-		User user = initializeUser();
-		Task task = new Task(4, user, "t2",1,"2022-03-09 08:30:10", "2022-03-09 08:50:00");
-		when(taskService.saveObject(task)).thenReturn("Task saved");
-		assertEquals("Task saved",taskService.saveObject(task));
+	void shouldGetAllUserTasksAsPagination() {
+		Pageable paging = PageRequest.of(0, 2, Sort.Direction.ASC,"start");
+		List<Task> expectedList = initializeListOfTasks();
+		Page<Task> listOfTasks = new PageImpl<>(expectedList);
+
+		when(taskRepository.findTasksByUserIdWithPagination(1,paging)).thenReturn(listOfTasks);
+		service.getTasks(1,paging);
+		assertEquals(listOfTasks,taskRepository.findTasksByUserIdWithPagination(1,paging));
 	}
 
 	@Test
-	void should_delete_task() {
-		int userId = 1;
-		when(taskService.deleteById(userId)).thenReturn("Task deleted");
-		assertEquals("Task deleted",taskService.deleteById(userId));
+	void shouldAddTask() {
+		User user = initializeUser();
+		Task task = new Task(3,user,"do something...",1,"2022-05-20 08:30:10","2022-05-20 08:50:00");
+
+		when(taskRepository.save(task)).thenReturn(task);
+		service.saveObject(task);
+		assertEquals(task,taskRepository.save(task));
 	}
 
-	private List<Task> initializeExpectedList(){
-		List<Task> expectedList = new ArrayList<>();
+	@Test
+	void shouldUpdateTask() {
 		User user = initializeUser();
-		expectedList.add(new Task(1, user, "t2",1,"2022-03-09 08:30:10", "2022-03-09 08:50:00"));
-		expectedList.add(new Task(2, user, "t2",1,"2022-03-10 08:30:10", "2022-03-10 08:50:00"));
-		expectedList.add(new Task(3, user, "t2",1,"2022-03-15 08:30:10", "2022-03-15 08:50:00"));
-		return expectedList;
+		Task newTask = new Task(3,user,"do something...",1,"2022-05-20 08:30:10","2022-05-20 08:50:00");
+		newTask.setDescription("do idk..."); //Do changes...
+
+		when(taskRepository.save(newTask)).thenReturn(newTask);
+		service.saveObject(newTask);
+		assertEquals(newTask,taskRepository.save(newTask));
+	}
+
+	@Test
+	void shouldDeleteTask() {
+		User user = initializeUser();
+		Task task = new Task(3,user,"do something...",1,"2022-05-20 08:30:10","2022-05-20 08:50:00");
+
+		service.deleteById(task.getId());
+		Iterable getTask = taskRepository.findAllById(Collections.singleton(task.getId()));
+		assertThat(getTask);
+	}
+
+	private List<Task> initializeListOfTasks() {
+		List<Task> taskList = new ArrayList<>();
+		User user = initializeUser();
+		taskList.add(new Task(1,user,"do something...",1,"2022-05-16 08:30:10","2022-05-16 08:50:00"));
+		taskList.add(new Task(2,user,"do something...",0,"2022-05-17 08:30:10","2022-05-17 08:50:00"));
+		return taskList;
 	}
 
 	private User initializeUser() {
@@ -76,4 +93,6 @@ class TaskServicesTests {
 		user.setSignout(false);
 		return user;
 	}
+
+
 }

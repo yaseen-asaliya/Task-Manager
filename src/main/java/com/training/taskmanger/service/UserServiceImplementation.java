@@ -55,15 +55,6 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
     }
 
     @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
-
-        return UserDetailsImpl.build(user);
-    }
-
-    @Override
     public List<Task> getTasks(int userId) {
         return null;
     }
@@ -72,4 +63,14 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
     public Page<Task> getTasks(int userId, Pageable pageable) {
         return null;
     }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+
+        return UserDetailsImpl.build(user);
+    }
+
 }
