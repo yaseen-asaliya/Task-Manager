@@ -1,6 +1,7 @@
 package com.training.taskmanger.services;
 
 import com.training.taskmanger.entity.User;
+import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.service.UserServiceImplementation;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -29,6 +32,17 @@ class UserServicesTests {
 
 		when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
 		assertEquals(expectedUser,service.findById(anyInt()));
+	}
+
+	@Test
+	void shouldGetUserNotFound() {
+		boolean thrown = false;
+		try {
+			service.findById(anyInt());
+		} catch (NotFoundException e) {
+			thrown = true;
+		}
+		assertTrue(thrown);
 	}
 
 	@Test
