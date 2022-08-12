@@ -7,16 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collections;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserServicesTests {
@@ -28,40 +25,35 @@ class UserServicesTests {
 
 	@Test
 	void shouldGetCurrentUser() {
-		User user = initializeUser();
-		int userId =1;
+		User expectedUser = initializeUser();
 
-		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-		service.findById(userId);
-		assertEquals(user,userRepository.findById(userId).get());
+		when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
+		assertEquals(expectedUser,service.findById(anyInt()));
 	}
 
 	@Test
 	void shouldUpdateUser() {
-		User user = initializeUser();
-		user.setEmail("yaseen.asaliya22@gmail.com"); // Make update
+		User updatedUser = initializeUser();
+		updatedUser.setEmail("yaseen.asaliya22@gmail.com"); // Do some changes...
 
-		when(userRepository.save(user)).thenReturn(user);
-		service.saveObject(user);
-		assertEquals(user,userRepository.save(user));
+		when(userRepository.save(any())).thenReturn(updatedUser);
+		assertEquals("User saved",service.saveObject(any()));
 	}
 
 	@Test
 	void shouldDeleteUser() {
-		User user = initializeUser();
+		// Here we don't need to mock the "deleteById" cause it's a void method, so we just verify it.
 
-		service.deleteById(user.getId());
-		Iterable getUser = userRepository.findAllById(Collections.singleton(user.getId()));
-		assertThat(getUser);
+		assertEquals("User deleted",service.deleteById(anyInt()));
+		verify(userRepository).deleteById(anyInt()); //check that the method was called successfully
 	}
 
 	@Test
 	public void shouldLoadUserByUsername() {
-		User user = initializeUser();
-		Optional<User> opt = Optional.of(user);
-		when(userRepository.findByUsername(anyString())).thenReturn(opt);
-		UserDetails userDetails = service.loadUserByUsername(anyString());
-		assertEquals("ys", userDetails.getUsername());
+		Optional<User> expectedUser = Optional.of(initializeUser());
+
+		when(userRepository.findByUsername(anyString())).thenReturn(expectedUser);
+		assertEquals(expectedUser.get().getUsername(), service.loadUserByUsername(anyString()).getUsername());
 	}
 
 	@Test
