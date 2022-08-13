@@ -53,7 +53,6 @@ public class TaskRestController {
         LOGGER.info("Task Controller created successfully");
     }
 
-
     // Get all tasks for current user
     @GetMapping("/tasks")
     public Page<Task> getAllUserTasks(
@@ -71,7 +70,6 @@ public class TaskRestController {
 
         Pageable paging = PageRequest
                 .of(page.orElse(FIRST_PAGE), pageSize.orElse(DEFAULT_PAGE_SIZE), sort,sortBy.orElse(DEFAULT_SORT));
-
         return taskService.getTasks(userId,paging);
     }
 
@@ -97,7 +95,7 @@ public class TaskRestController {
         checkIfLogin();
         checkConflict(task);
         int userId = authTokenFilter.getUserId();
-        Optional<Task> tempTask =taskRepository.findById(task.getId());
+        Optional<Task> tempTask = taskRepository.findById(task.getId());
         if(tempTask == null){
             LOGGER.warn("Wrong user id passed");
             throw new NotFoundException("Task with id -" + task.getId() + "- not found.");
@@ -168,7 +166,7 @@ public class TaskRestController {
             throw new RuntimeException("Conflict between tasks times.");
         }
     }
-    private Sort.Direction getDirection(Optional<String> sortDirection){
+    private Sort.Direction getDirection(Optional<String> sortDirection) {
         Sort.Direction sort;
         if(sortDirection.get().equals(ASCENDING_DIRECTION)){
             sort = ASC;

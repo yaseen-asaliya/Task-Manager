@@ -88,6 +88,7 @@ public class UserRestController {
         }
         return false;
     }
+
     private void checkIfLogin(){
         if(isSignout()){
             throw new RuntimeException("You're unauthorized");

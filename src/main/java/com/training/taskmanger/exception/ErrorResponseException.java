@@ -9,16 +9,6 @@ public class ErrorResponseException {
     public ErrorResponseException() {
     }
 
-    public ErrorResponseException(int status, String message, long timeStamp) {
-        this.status = status;
-        this.message = message;
-        this.timeStamp = timeStamp;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
     public void setStatus(int status) {
         this.status = status;
     }

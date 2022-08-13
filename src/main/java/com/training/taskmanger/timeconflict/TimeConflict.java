@@ -29,13 +29,16 @@ public class TimeConflict {
         Date startDate = dateFormat.parse(start);
         Date endDate = dateFormat.parse(finish);
 
-        for (int i=0 ;i < tasks.size() && tasks.get(i).getId() != taskId; i++) {
-            Date newStart =  dateFormat.parse(tasks.get(i).getStart());
-            Date newEnd =  dateFormat.parse(tasks.get(i).getFinish());
-            overlap = newStart.compareTo(endDate) <= NOT_CONFLICT && newEnd.compareTo(startDate) >= NOT_CONFLICT;
-            if(overlap){
-                break;
+        for (int i=0 ;i < tasks.size(); i++) {
+            if(tasks.get(i).getId() != taskId){
+                Date newStart =  dateFormat.parse(tasks.get(i).getStart());
+                Date newEnd =  dateFormat.parse(tasks.get(i).getFinish());
+                overlap = newStart.compareTo(endDate) <= NOT_CONFLICT && newEnd.compareTo(startDate) >= NOT_CONFLICT;
+                if(overlap){
+                    break;
+                }
             }
+
         }
         return overlap;
     }

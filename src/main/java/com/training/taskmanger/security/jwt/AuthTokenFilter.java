@@ -25,7 +25,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   private JwtUtils jwtUtils;
   @Autowired
   private UserServiceImplementation userServiceImplementation;
-
   private int userId;
 
   @Override
@@ -68,4 +67,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   }
 
 
+  public void setUserId(int userId) {
+    this.userId = userId;
+  }
 }

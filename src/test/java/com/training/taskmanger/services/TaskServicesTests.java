@@ -2,6 +2,7 @@ package com.training.taskmanger.services;
 
 import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
+import com.training.taskmanger.exception.NotFoundException;
 import com.training.taskmanger.repository.TaskRepository;
 import com.training.taskmanger.service.TaskServiceImplementation;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,10 @@ import org.springframework.data.domain.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -69,6 +72,25 @@ class TaskServicesTests {
 
 		assertEquals("Task deleted",service.deleteById(anyInt()));
 		verify(taskRepository).deleteById(anyInt()); //check that the method was called successfully
+	}
+
+	@Test
+	void shouldGetTask() {
+		Task expectedTask = initializeTask();
+
+		when(taskRepository.findById(anyInt())).thenReturn(Optional.of(expectedTask));
+		assertEquals(expectedTask,service.findById(anyInt()));
+	}
+
+	@Test
+	void shouldGetWrongTaskId() {
+		boolean thrown = false;
+		try {
+			service.findById(anyInt());
+		} catch (NotFoundException e) {
+			thrown = true;
+		}
+		assertTrue(thrown);
 	}
 
 	private Task initializeTask() {

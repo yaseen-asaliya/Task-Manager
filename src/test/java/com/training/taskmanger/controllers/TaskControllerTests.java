@@ -1,109 +1,134 @@
 package com.training.taskmanger.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
-import com.training.taskmanger.security.WebSecurityConfig;
+import com.training.taskmanger.exception.ErrorResponseException;
+import com.training.taskmanger.exception.NotFoundException;
+import com.training.taskmanger.exception.RestExceptionHandler;
+import com.training.taskmanger.repository.TaskRepository;
+import com.training.taskmanger.repository.UserRepository;
+import com.training.taskmanger.security.jwt.AuthTokenFilter;
 import com.training.taskmanger.service.TaskServiceImplementation;
-import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.security.Security;
 import java.util.*;
 
-import static org.mockito.Mockito.when;
+import static com.training.taskmanger.controllers.LoginAndSignoutTests.asJsonString;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.data.domain.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+@AutoConfigureMockMvc(addFilters = false)
 public class TaskControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private TaskServiceImplementation service;
+    private TaskServiceImplementation taskService;
 
-    // Noy ready
-    /*@Test
+    @Mock
+    private TaskRepository taskRepository;
+
+    @MockBean
+    private AuthTokenFilter authTokenFilter;
+
+    @MockBean
+    private UserRepository userRepository;
+
+
+    @Test
     @WithMockUser(username = "ys",password = "123")
     void shouldGetAllTasks() throws Exception {
-        Optional<Integer> page = Optional.of(0);
-        Optional<String> sortBy = Optional.of("start");
-        Optional<Integer> pageSize = Optional.of(0);
-        Optional<String> sortDirection = Optional.of("ASC");
+        MultiValueMap<String, Object> paraMap = getParaMap();
+        URI uri = getUrl();
+        Page<Task> expectedTasksListWithPagination = new PageImpl<>(initializeListOfTasks());
 
-        MultiValueMap<String, Object> paraMap =new LinkedMultiValueMap<>();
-        paraMap.add("page", page);
-        paraMap.add("sortBy", sortBy);
-        paraMap.add("pageSize", pageSize);
-        paraMap.add("sortDirection", sortDirection);
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
+        when(taskService.getTasks(anyInt(),any())).thenReturn(expectedTasksListWithPagination);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
 
-        URI uri = UriComponentsBuilder.fromPath("/api/tasks")
-                .queryParam("page", Optional.of(1))
-                .queryParam("sortBy",Optional.of("start"))
-                .queryParam("pageSize", Optional.of(3))
-                .queryParam("sortDirection",Optional.of("ASC"))
-                .build().toUri();
-
-        mockMvc.perform( MockMvcRequestBuilders.get(uri)
-                        .accept(MediaType.APPLICATION_JSON))
+        MvcResult mvcResult = mockMvc.perform(get(uri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(paraMap)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
                 .andReturn();
+
+        assertEquals(asJsonString(expectedTasksListWithPagination),mvcResult.getResponse().getContentAsString());
     }
 
     @Test
     @WithMockUser(username = "ys",password = "123")
     void shouldAddTask() throws Exception {
-        Task task = initializeTask();
+        Task newTask = initializeTask();
+        String expectedBody = newTask + " added successfully.";
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
+        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
 
-        JSONObject json = new JSONObject();
-        json.put("name", "student");
-
-        String x = "{\"id\":1,\"user\":{\"id\":1,\"name\":\"yaseen\"," +
-                "\"password\":\"$2a$10$O27NNHkM8h.e458Dx4EET./CY4iism9/iC0yYgglhU6d2HdiamaAy\"," +
-                "\"email\":\"yaseens@gmail.com\",\"username\":\"ys\",\"signout\":false}," +
-                "\"description\":\"dosomething....\",\"completed\":1,\"start\":\"2022-05-1608:30:10\"" +
-                ",\"finish\":\"2022-05-1608:50:00\"";
-
-        mockMvc.perform(post("/api/tasks")
+        MvcResult mvcResult = mockMvc.perform(post("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(x))
-                .andExpect(status().isOk());
+                        .content(asJsonString(newTask)))
+                .andExpect(status().isOk())
+                .andReturn();
 
-    }*/
+        assertEquals(expectedBody,mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    @WithMockUser(username = "ys",password = "123")
+    void shouldUpdateTask() throws Exception {
+        Task newTask = initializeTask();
+        newTask.setCompleted(0); // Do some changes...
+        String expectedBody = newTask + " updated successfully.";
+
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(taskRepository.findById(anyInt())).thenReturn(Optional.of(newTask));
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
+        when(taskService.saveObject(any())).thenReturn(String.valueOf(newTask));
+        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(newTask)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertEquals(expectedBody,mvcResult.getResponse().getContentAsString());
+    }
 
     @Test
     @WithMockUser(username = "ys",password = "123")
     void shouldDeleteTask() throws Exception {
-        int taskId = 1;
-        when(service.deleteById(taskId)).thenReturn(initializeTask() + " deleted successfully.");
-        mockMvc.perform(delete("/api/tasks/{taskId}",taskId)).andExpect(status().isAccepted());
+        String expectedBody = initializeTask() + " deleted successfully.";
+
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(taskService.findById(anyInt())).thenReturn(initializeTask());
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
+
+        MvcResult mvcResult = mockMvc.perform(delete("/api/tasks/{taskId}",1))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertEquals(expectedBody,mvcResult.getResponse().getContentAsString());
     }
 
     private User initializeUser() {
@@ -117,12 +142,37 @@ public class TaskControllerTests {
         Task task = new Task(1,initializeUser(),"test",1,"2022-05-16 08:30:10","2022-05-16 08:50:00");
         return task;
     }
+
     private List<Task> initializeListOfTasks() {
         List<Task> taskList = new ArrayList<>();
         User user = initializeUser();
         taskList.add(new Task(1,user,"do something...",1,"2022-05-16 08:30:10","2022-05-16 08:50:00"));
         taskList.add(new Task(2,user,"do something...",0,"2022-05-17 08:30:10","2022-05-17 08:50:00"));
         return taskList;
+    }
+
+    private URI getUrl() {
+        MultiValueMap<String, Object> paraMap = new LinkedMultiValueMap<>();
+        paraMap.add("page", Optional.of(0));
+        paraMap.add("sortBy", Optional.of("start"));
+        paraMap.add("pageSize", Optional.of(2));
+        paraMap.add("sortDirection", Optional.of("ascending"));
+        URI uri = UriComponentsBuilder.fromPath("/api/tasks")
+                .queryParam("page", Optional.of(1))
+                .queryParam("sortBy",Optional.of("start"))
+                .queryParam("pageSize", Optional.of(3))
+                .queryParam("sortDirection",Optional.of("ascending"))
+                .build().toUri();
+        return uri;
+    }
+
+    private MultiValueMap<String, Object> getParaMap() {
+        MultiValueMap<String, Object> paraMap = new LinkedMultiValueMap<>();
+        paraMap.add("page", Optional.of(0));
+        paraMap.add("sortBy", Optional.of("start"));
+        paraMap.add("pageSize", Optional.of(2));
+        paraMap.add("sortDirection", Optional.of("ascending"));
+        return paraMap;
     }
 
 }
