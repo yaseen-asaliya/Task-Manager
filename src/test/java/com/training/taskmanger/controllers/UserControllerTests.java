@@ -6,9 +6,8 @@ import com.training.taskmanger.entity.User;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
 import com.training.taskmanger.service.UserServiceImplementation;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,10 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import static com.training.taskmanger.controllers.LoginAndSignoutTests.asJsonString;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -49,16 +46,18 @@ public class UserControllerTests {
     @MockBean
     private PasswordEncoder encoder;
 
-    @Mock
-    private UserRestController userRestController;
+    @BeforeEach
+    private void commonMocks() {
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(userService.findById(anyInt())).thenReturn(initializeUser());
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
+
+
+    }
 
     @Test
     void shouldGetCurrentUser() throws Exception {
         User expectedUser = initializeUser();
-
-        when(authTokenFilter.getUserId()).thenReturn(1);
-        when(userService.findById(anyInt())).thenReturn(expectedUser);
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
 
         MvcResult mvcResult = mockMvc.perform(get("/api/user")
                                     .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +75,6 @@ public class UserControllerTests {
         expectedUser.setPassword(encoder.encode(expectedUser.getPassword()));
         String expectedBody = expectedUser + " updated successfully.";
 
-        when(authTokenFilter.getUserId()).thenReturn(1);
         when(userService.saveObject(any())).thenReturn(String.valueOf(expectedUser));
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
         when(userService.saveObject(any())).thenReturn(String.valueOf(expectedUser));

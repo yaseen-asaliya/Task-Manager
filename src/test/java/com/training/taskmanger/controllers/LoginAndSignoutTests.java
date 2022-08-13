@@ -5,6 +5,7 @@ import com.training.taskmanger.entity.User;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.http.request.LoginRequest;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -42,13 +43,16 @@ class LoginAndSignoutTests {
 	@MockBean
 	private AuthTokenFilter authTokenFilter;
 
+	@BeforeEach
+	private void commonMocks() {
+		when(authTokenFilter.getUserId()).thenReturn(1);
+		when(userRepository.save(any())).thenReturn(initializeUser());
+	}
+
 	@Test
 	void shouldSignIn() throws Exception {
 		LoginRequest signinRequest = new LoginRequest("ys","123");
 		String expectedBody = "{\"message\":\"Login Successfully!!\"}";
-
-		when(authTokenFilter.getUserId()).thenReturn(1);
-		when(userRepository.save(any())).thenReturn(initializeUser());
 
 		MvcResult mvcResult = mockMvc.perform(post("/api/auth/signin")
 								.contentType(MediaType.APPLICATION_JSON)
@@ -59,16 +63,8 @@ class LoginAndSignoutTests {
 	}
 
 	@Test
-	void shouldReturnUnauthorized() {
-
-	}
-
-	@Test
 	void shouldSignoutFromAllPlaces() throws Exception {
 		String expectedBody = "{\"message\":\"Signout from all places\"}";
-
-		when(authTokenFilter.getUserId()).thenReturn(1);
-		when(userRepository.save(any())).thenReturn(initializeUser());
 
 		MvcResult mvcResult = mockMvc.perform(post("/api/auth/signoutAll"))
 				.andExpect(status().isOk())

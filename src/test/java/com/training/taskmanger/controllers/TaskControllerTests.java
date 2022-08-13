@@ -2,13 +2,11 @@ package com.training.taskmanger.controllers;
 
 import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.entity.User;
-import com.training.taskmanger.exception.ErrorResponseException;
-import com.training.taskmanger.exception.NotFoundException;
-import com.training.taskmanger.exception.RestExceptionHandler;
 import com.training.taskmanger.repository.TaskRepository;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
 import com.training.taskmanger.service.TaskServiceImplementation;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +51,13 @@ public class TaskControllerTests {
     @MockBean
     private UserRepository userRepository;
 
+    @BeforeEach
+    private void commonMocks() {
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
+        when(taskService.findById(anyInt())).thenReturn(initializeTask());
+    }
 
     @Test
     @WithMockUser(username = "ys",password = "123")
@@ -61,10 +66,7 @@ public class TaskControllerTests {
         URI uri = getUrl();
         Page<Task> expectedTasksListWithPagination = new PageImpl<>(initializeListOfTasks());
 
-        when(authTokenFilter.getUserId()).thenReturn(1);
-        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
         when(taskService.getTasks(anyInt(),any())).thenReturn(expectedTasksListWithPagination);
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
 
         MvcResult mvcResult = mockMvc.perform(get(uri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,9 +82,6 @@ public class TaskControllerTests {
     void shouldAddTask() throws Exception {
         Task newTask = initializeTask();
         String expectedBody = newTask + " added successfully.";
-        when(authTokenFilter.getUserId()).thenReturn(1);
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
-        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
 
         MvcResult mvcResult = mockMvc.perform(post("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -100,11 +99,8 @@ public class TaskControllerTests {
         newTask.setCompleted(0); // Do some changes...
         String expectedBody = newTask + " updated successfully.";
 
-        when(authTokenFilter.getUserId()).thenReturn(1);
         when(taskRepository.findById(anyInt())).thenReturn(Optional.of(newTask));
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
         when(taskService.saveObject(any())).thenReturn(String.valueOf(newTask));
-        when(taskService.getTasks(anyInt())).thenReturn(initializeListOfTasks());
 
         MvcResult mvcResult = mockMvc.perform(put("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -119,10 +115,6 @@ public class TaskControllerTests {
     @WithMockUser(username = "ys",password = "123")
     void shouldDeleteTask() throws Exception {
         String expectedBody = initializeTask() + " deleted successfully.";
-
-        when(authTokenFilter.getUserId()).thenReturn(1);
-        when(taskService.findById(anyInt())).thenReturn(initializeTask());
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/tasks/{taskId}",1))
                 .andExpect(status().isOk())
