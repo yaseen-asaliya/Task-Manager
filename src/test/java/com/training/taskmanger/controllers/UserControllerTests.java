@@ -52,7 +52,6 @@ public class UserControllerTests {
         when(userService.findById(anyInt())).thenReturn(initializeUser());
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(initializeUser()));
 
-
     }
 
     @Test
@@ -93,11 +92,7 @@ public class UserControllerTests {
         User tempUser = initializeUser();
         String expectedBody = tempUser + " deleted successfully.";
 
-        when(authTokenFilter.getUserId()).thenReturn(1);
-        when(userService.saveObject(any())).thenReturn(String.valueOf(tempUser));
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(tempUser));
         when(userService.deleteById(anyInt())).thenReturn("User deleted");
-        when(userService.findById(anyInt())).thenReturn(tempUser);
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)

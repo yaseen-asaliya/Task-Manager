@@ -1,8 +1,5 @@
 package com.training.taskmanger.security.jwt;
 
-import com.training.taskmanger.entity.User;
-import com.training.taskmanger.exception.NotFoundException;
-import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.service.UserServiceImplementation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +28,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     try {
-
       String jwt = parseJwt(request);
 
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
+        System.out.println(username+">>>>>>>>>>>>>>");
         userId = Integer.parseInt(jwtUtils.getIdFromJwtToken(jwt));
         LOGGER.info("doFilterInternal :: got username = " + username + " with id = " + userId + " from jwt.");
 
@@ -64,10 +61,5 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   public int getUserId() {
     return userId;
-  }
-
-
-  public void setUserId(int userId) {
-    this.userId = userId;
   }
 }
