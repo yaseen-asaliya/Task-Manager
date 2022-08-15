@@ -20,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -71,7 +70,6 @@ public class TaskRestController {
 
         Pageable paging = PageRequest
                 .of(page.orElse(FIRST_PAGE), pageSize.orElse(DEFAULT_PAGE_SIZE), sort,sortBy.orElse(DEFAULT_SORT));
-
         return taskService.getTasks(userId,paging);
     }
 
@@ -82,9 +80,6 @@ public class TaskRestController {
         checkConflict(task);
         int userId = authTokenFilter.getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) {
-            throw new NotFoundException("User with id -" + userId +  "- not found.");
-        }
         task.setUser(optionalUser.get());
         taskService.saveObject(task);
         LOGGER.debug("Task has been posted.");
@@ -97,20 +92,18 @@ public class TaskRestController {
         checkIfLogin();
         checkConflict(task);
         int userId = authTokenFilter.getUserId();
-        Optional<Task> tempTask =taskRepository.findById(task.getId());
-        if(tempTask == null){
-            LOGGER.warn("Wrong user id passed");
+        Optional<Task> optionalTask = taskRepository.findById(task.getId());
+
+        if(!optionalTask.isPresent()){
             throw new NotFoundException("Task with id -" + task.getId() + "- not found.");
         }
 
-        if(tempTask.get().getUser().getId() != userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if(optionalTask.get().getUser().getId() != userId){
             throw new NotFoundException("This task is not belong to you.");
         }
 
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) {
-            throw new NotFoundException("User with id -" + userId +  "- not found.");
-        }
         optionalUser.get().setId(userId);
         task.setUser(optionalUser.get());
         taskService.saveObject(task);
@@ -168,7 +161,7 @@ public class TaskRestController {
             throw new RuntimeException("Conflict between tasks times.");
         }
     }
-    private Sort.Direction getDirection(Optional<String> sortDirection){
+    private Sort.Direction getDirection(Optional<String> sortDirection) {
         Sort.Direction sort;
         if(sortDirection.get().equals(ASCENDING_DIRECTION)){
             sort = ASC;

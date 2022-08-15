@@ -69,12 +69,10 @@ public class AuthenticationController {
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
     }
-
     User user = new User(signUpRequest.getName(),
                          encoder.encode(signUpRequest.getPassword()),
                          signUpRequest.getEmail(),
-                         signUpRequest.getUsername()
-    );
+                         signUpRequest.getUsername());
 
     userRepository.save(user);
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

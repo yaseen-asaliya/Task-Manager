@@ -43,22 +43,15 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
     }
 
     @Override
-    public void saveObject(User user) {
+    public String saveObject(User user) {
         userRepository.save(user);
+        return "User saved";
     }
 
     @Override
-    public void deleteById(int userId) {
+    public String deleteById(int userId) {
         userRepository.deleteById(userId);
-    }
-
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
-
-        return UserDetailsImpl.build(user);
+        return "User deleted";
     }
 
     @Override
@@ -70,4 +63,14 @@ public class UserServiceImplementation implements Services<User>,UserDetailsServ
     public Page<Task> getTasks(int userId, Pageable pageable) {
         return null;
     }
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+
+        return UserDetailsImpl.build(user);
+    }
+
 }

@@ -31,13 +31,6 @@ public class User {
         this.isSignout= true;
     }
 
-    public void add(Task task){
-        if(tasks == null){
-            tasks = new ArrayList<>();
-        }
-        tasks.add(task);
-        task.setUser(this);
-    }
 
     public int getId() {
         return id;
@@ -95,7 +88,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
-                ", isSignout='" + isSignout + '\'' +
+                ", signout='" + isSignout + '\'' +
                 '}';
     }
 }

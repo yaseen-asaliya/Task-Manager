@@ -66,9 +66,15 @@ public class UserRestController {
     }
 
     @PreDestroy
-    public void resetIsSignoutColumn() {
+    public boolean resetIsSignoutColumn() {
         LOGGER.info("Reset all users to signout.");
-        userRepository.resetIsSignout();
+        try{
+            userRepository.resetIsSignout();
+            return true;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private boolean isSignout() {
@@ -82,6 +88,7 @@ public class UserRestController {
         }
         return false;
     }
+
     private void checkIfLogin(){
         if(isSignout()){
             throw new RuntimeException("You're unauthorized");
