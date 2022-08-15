@@ -5,15 +5,12 @@ import com.training.taskmanger.entity.User;
 import com.training.taskmanger.repository.UserRepository;
 import com.training.taskmanger.security.http.request.LoginRequest;
 import com.training.taskmanger.security.jwt.AuthTokenFilter;
-import com.training.taskmanger.security.jwt.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -24,9 +21,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.WebUtils;
-
-import javax.servlet.http.Cookie;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -49,9 +43,6 @@ class LoginAndSignoutTests {
 	@MockBean
 	private AuthTokenFilter authTokenFilter;
 
-	@Mock
-	private JwtUtils jwtUtils;
-
 	@BeforeEach
 	private void commonMocks() {
 		when(authTokenFilter.getUserId()).thenReturn(1);
@@ -70,23 +61,6 @@ class LoginAndSignoutTests {
 				.andExpect(status().isOk())
 				.andReturn();
 		assertEquals(expectedBody,mvcResult.getResponse().getContentAsString());
-	}
-
-	@Test
-	void shouldNotSignIn() throws Exception {
-		LoginRequest signinRequest = new LoginRequest("ys","123");
-
-		when(jwtUtils.validateJwtToken(anyString())).thenReturn(true);
-		when(jwtUtils.getUserNameFromJwtToken(anyString())).thenReturn("ys");
-		
-
-		MvcResult mvcResult = mockMvc.perform(post("/api/auth/signin")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(asJsonString(signinRequest)))
-				.andExpect(status().isOk())
-				.andReturn();
-
-		assertEquals(200,mvcResult.getResponse().getStatus());
 	}
 
 	@Test
