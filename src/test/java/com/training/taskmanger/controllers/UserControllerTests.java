@@ -68,6 +68,40 @@ public class UserControllerTests {
     }
 
     @Test
+    void shouldNotGetSignoutUser() throws Exception {
+        User expectedUser = initializeUser();
+        expectedUser.setSignout(true);
+
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(userService.findById(anyInt())).thenReturn(expectedUser);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(expectedUser));
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(expectedUser)))
+                .andReturn();
+
+        assertEquals(true,mvcResult.getResponse().getContentAsString().contains("You're unauthorized"));
+    }
+
+    @Test
+    void shouldNotGetNotFound() throws Exception {
+        User expectedUser = initializeUser();
+        expectedUser.setSignout(true);
+
+        when(authTokenFilter.getUserId()).thenReturn(1);
+        when(userService.findById(anyInt())).thenReturn(expectedUser);
+        when(userRepository.findById(anyInt())).thenReturn(null);
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(expectedUser)))
+                .andReturn();
+
+        assertEquals(true,mvcResult.getResponse().getContentAsString().contains("User not found"));
+    }
+
+    @Test
     void shouldUpdateUser() throws Exception {
         User expectedUser = initializeUser();
         expectedUser.setEmail("Yaseen@gmail.com");

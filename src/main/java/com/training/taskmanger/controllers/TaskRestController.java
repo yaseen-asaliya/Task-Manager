@@ -80,9 +80,6 @@ public class TaskRestController {
         checkConflict(task);
         int userId = authTokenFilter.getUserId();
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) {
-            throw new NotFoundException("User with id -" + userId +  "- not found.");
-        }
         task.setUser(optionalUser.get());
         taskService.saveObject(task);
         LOGGER.debug("Task has been posted.");
@@ -95,20 +92,18 @@ public class TaskRestController {
         checkIfLogin();
         checkConflict(task);
         int userId = authTokenFilter.getUserId();
-        Optional<Task> tempTask = taskRepository.findById(task.getId());
-        if(tempTask == null){
-            LOGGER.warn("Wrong user id passed");
+        Optional<Task> optionalTask = taskRepository.findById(task.getId());
+
+        if(!optionalTask.isPresent()){
             throw new NotFoundException("Task with id -" + task.getId() + "- not found.");
         }
 
-        if(tempTask.get().getUser().getId() != userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if(optionalTask.get().getUser().getId() != userId){
             throw new NotFoundException("This task is not belong to you.");
         }
 
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (!optionalUser.isPresent()) {
-            throw new NotFoundException("User with id -" + userId +  "- not found.");
-        }
         optionalUser.get().setId(userId);
         task.setUser(optionalUser.get());
         taskService.saveObject(task);
