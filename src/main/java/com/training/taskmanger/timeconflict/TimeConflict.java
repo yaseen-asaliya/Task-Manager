@@ -4,6 +4,7 @@ import com.training.taskmanger.entity.Task;
 import com.training.taskmanger.service.TaskServiceImplementation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class TimeConflict {
     private final int NOT_CONFLICT = 0;
     public final Logger LOGGER = LoggerFactory.getLogger(TimeConflict.class.getName());
